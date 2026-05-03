@@ -1,0 +1,30 @@
+                              
+DFD                           
+HZZZZZZZZZZZZZH               
+HH                            
+DSSD                          
+ZHZZZZZZZZZZZZZZZZZZZZZHZ     
+HH                            
+SDDS                          
+ZZZZZZZZHZZZZZZZZHZZZZZZZZZ   
+HH                            
+DSSED                         
+ZZHZZZZZZZZZZZZZZZZZZH        
+HH                            
+SDDS                          
+ZZZZZZHZZZZZZZZZZZZZZHZZZZZZ  
+HH                            
+SDSE                          
+ZZZZZZZZZZZZZHZZZZZZZZZZZZZ   
+H                             
+DSDH                          
+ZHZZZZZZZZZZZZZHZS            
+HH                            
+DESSDD                        
+ HZZZZZZZZZZZZZZZZZZZZZZZZHZZZ
+ H                        H   
+ S   P                    S   
+ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+                              
+                              
+                              
