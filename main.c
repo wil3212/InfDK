@@ -100,17 +100,18 @@ void drawMatrix(char* matrix, mario player) {
 
 
 void calculaCantosInt(mario* player) {
+    float offset = 0.9;
     player->intPos[0] = (int)player->pos[0];
     player->intPos[1] = (int)player->pos[1];
 
     player->intPos[2] = (int)player->pos[0];
-    player->intPos[3] = (int)(player->pos[1]+1);
+    player->intPos[3] = (int)(player->pos[1]+offset);
 
-    player->intPos[4] = (int)(player->pos[0]+1);
+    player->intPos[4] = (int)(player->pos[0]+offset);
     player->intPos[5] = (int)player->pos[1];
 
-    player->intPos[6] = (int)(player->pos[0]+1);
-    player->intPos[7] = (int)(player->pos[1]+1);
+    player->intPos[6] = (int)(player->pos[0]+offset);
+    player->intPos[7] = (int)(player->pos[1]+offset);
 }
 
 
@@ -139,27 +140,35 @@ int main() {
 	InitWindow((NLIN-1)*TAM,(NCOL-1)*TAM,"shdfhsdfhshf");	
     SetTargetFPS(60);
 	while (!WindowShouldClose()) {
+        //O que segue é um sistema *ruim* para colisão com plataformas, utilizando ocmo base a posição em inteiros do player (isso descobre em qual quadrado da grade se encontra o player), a partir disso, facilitado pelo fato de que todas as plataformas estao alinhadas a uma grade, fica facil checar se a colisão ocorre ou não (isso vai quebrar se a velocidade for muito grande....
 		if (IsKeyDown(KEY_W)) player1->pos[0] -= SPEED;
-		if (IsKeyDown(KEY_S)) player1->pos[0] += SPEED;
-		if (IsKeyDown(KEY_D)) player1->pos[1] += SPEED;
-		if (IsKeyDown(KEY_A)) player1->pos[1] -= SPEED;
-        player1->pos[0] += GRAVITY;      //simples implementação da gravidade
-                                         //O que segue é um sistema simples para colisão com plataformas, utilizando ocmo base a posição em inteiros do player (isso descobre em qual quadrado da grade se encontra o player), a partir disso, facilitado pelo fato de que todas as plataformas estao alinhadas a uma grade, fica facil checar se a colisão ocorre ou não (isso vai quebrar se a velocidade for muito grande....
-        //player1->intPos[0] = (int)player1->pos[0];
-        //player1->intPos[1] = (int)player1->pos[1];
         calculaCantosInt(player1);
-        if (matrix[(player1->intPos[0]+1)*NCOL+player1->intPos[1]] == 'Z') player1->pos[0] = player1->intPos[0];
-        else if (matrix[(player1->intPos[2]+1)*NCOL+player1->intPos[3]] == 'Z') player1->pos[0] = player1->intPos[0];
+        if (matrix[(player1->intPos[4]-1)*NCOL+player1->intPos[5]] == 'Z') { player1->pos[0] = player1->intPos[4]; calculaCantosInt(player1);}
+        if (matrix[(player1->intPos[6]-1)*NCOL+player1->intPos[7]] == 'Z') { player1->pos[0] = player1->intPos[4]; calculaCantosInt(player1);}
 
-        else if (matrix[(player1->intPos[4]-1)*NCOL+player1->intPos[5]] == 'Z') player1->pos[0] = player1->intPos[4];
-        else if (matrix[(player1->intPos[6]-1)*NCOL+player1->intPos[7]] == 'Z') player1->pos[0] = player1->intPos[4];
+		if (IsKeyDown(KEY_S)) player1->pos[0] += SPEED;
+        calculaCantosInt(player1);
+        if (matrix[(player1->intPos[0]+1)*NCOL+player1->intPos[1]] == 'Z') {player1->pos[0] = player1->intPos[0]; calculaCantosInt(player1);}
+        if (matrix[(player1->intPos[2]+1)*NCOL+player1->intPos[3]] == 'Z') {player1->pos[0] = player1->intPos[0]; calculaCantosInt(player1);}
+
+		if (IsKeyDown(KEY_D)) player1->pos[1] += SPEED;
+        calculaCantosInt(player1);
+        if (matrix[(player1->intPos[0])*NCOL+player1->intPos[1]+1] == 'Z') { player1->pos[1] = player1->intPos[1]; calculaCantosInt(player1);}
+        if (matrix[(player1->intPos[4])*NCOL+player1->intPos[5]+1] == 'Z') { player1->pos[1] = player1->intPos[1]; calculaCantosInt(player1);}
+
+		if (IsKeyDown(KEY_A)) player1->pos[1] -= SPEED;
+        calculaCantosInt(player1);
+        if (matrix[(player1->intPos[2])*NCOL+player1->intPos[3]-1] == 'Z') { player1->pos[1] = player1->intPos[3]; calculaCantosInt(player1);}
+        if (matrix[(player1->intPos[6])*NCOL+player1->intPos[7]-1] == 'Z') { player1->pos[1] = player1->intPos[7]; calculaCantosInt(player1);}
+
+        player1->pos[0] += GRAVITY;      
+        calculaCantosInt(player1);
+        if (matrix[(player1->intPos[0]+1)*NCOL+player1->intPos[1]] == 'Z') {player1->pos[0] = player1->intPos[0]; calculaCantosInt(player1);}
+        if (matrix[(player1->intPos[2]+1)*NCOL+player1->intPos[3]] == 'Z') {player1->pos[0] = player1->intPos[0]; calculaCantosInt(player1);}
 
 
-        else if (matrix[(player1->intPos[0])*NCOL+player1->intPos[1]+1] == 'Z') player1->pos[1] = player1->intPos[1];
-        else if (matrix[(player1->intPos[4])*NCOL+player1->intPos[5]+1] == 'Z') player1->pos[1] = player1->intPos[1];
 
-        else if (matrix[(player1->intPos[2])*NCOL+player1->intPos[3]-1] == 'Z') player1->pos[1] = player1->intPos[3];
-        else if (matrix[(player1->intPos[6])*NCOL+player1->intPos[7]-1] == 'Z') player1->pos[1] = player1->intPos[3];
+
 
 		BeginDrawing();
 			ClearBackground(BLACK);

@@ -10,3 +10,8 @@ gcc main.c -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
   - [ ] main.c  -- Para a função principal e o fluxo geral do programa
   - [ ] dk.h  -- Arquivo contendo o protótipo das funções
   - [ ] dk.c  -- Desenvolvimento das funções (source files)
+
+
+* Sobre Termux:
+    * Uma vez aberto Termux:X11
+    * termux-x11 :0
