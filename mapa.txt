@@ -1,8 +1,8 @@
-                              
+      P                       
 DFD                           
-HZZZZZZZZZZZZZH               
-HH                            
-DSSD                          
+HZZZ  Z  ZZZZZH               
+HH            Z               
+DSSD    ZZ    Z               
 ZHZZZZZZZZZZZZZZZZZZZZZHZ     
 HH                            
 SDDS                          
@@ -23,7 +23,7 @@ HH
 D SSDD                        
  HZZZZZZZZZZZZZZZZZZZZZZZZHZZZ
  H                        H   
- S   P                    S   
+ S                        S   
 ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
                               
                               

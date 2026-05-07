@@ -1,0 +1,11 @@
+ IsKeyDown(KEY_UP)) 
+ IsKeyDown(KEY_DOWN))
+ IsKeyDown(KEY_RIGHT)
+ IsKeyDown(KEY_LEFT))
+
+
+ 
+ IsKeyDown(KEY_W)) 
+ IsKeyDown(KEY_S))
+ IsKeyDown(KEY_D)
+ IsKeyDown(KEY_A))

@@ -1,4 +1,12 @@
- #include <stdio.h>
+/*
+-> Por hora temos a renderização basica do mapa, com um player movimentavel.
+* Implementar a logica que faz o player (e futuros inimigos não atravessarem plataformas)
+  . Isso vai envolver manter o jogo a um certo FPS, e então checar se o que há abaixo do jogador é uma plataforma.
+  . Futuramente, será necessário deixar a posição do jogador como float 
+
+
+*/
+#include <stdio.h>
 #include <stdlib.h>
 #include <raylib.h>
 
@@ -8,11 +16,14 @@
 #define POS 20 
 #define TAM 20
 
-
+#define SPEED .15
+#define GRAVITY .1
 
 typedef struct player {
-	int pos[2];
-} mario;
+	float pos[2];
+    int intPos[8];      // possição em inteiros dos 4 cantos do player, da esquerda para a direita, de cima para baixo; ex: intPos[0] = cord x do cando superior esquerdo; intPos[5] = cord y do canto inferior esquerdo.
+    float verticalV;    // velocidade vertical sera usada para lidar gravidade, quanto a saltos eu cair de plataformas
+} mario; //sim, nome horrivel para isso
 
 
 char* alocaMatriz() { // matriz[i*NCOL+j]
@@ -32,10 +43,10 @@ char* carregaMapa(mario* mario) {
         for (int j=0;j<NCOL;j++) {
 	    tmpChar = fgetc(maps);
             matrix[i*NCOL+j] = tmpChar;		
-	    if (tmpChar == 'P') {
-		    mario->pos[0] = i;
-		    mario->pos[1] = j;
-	    }
+            if (tmpChar == 'P') {
+                mario->pos[0] = i;
+                mario->pos[1] = j;
+            }
 
         }
     }	
@@ -65,6 +76,9 @@ void drawMatrix(char* matrix, mario player) {
         for (int j=0;j<NCOL;j++) {
             //printf("%c",matrix[i*NCOL+j]);
             switch (matrix[j*NCOL+i]) {
+                case 'F':
+                    DrawRectangle(i*POS,j*POS,TAM,TAM, PINK); 
+                    break;
                 case 'Z':
                     DrawRectangle(i*POS,j*POS,TAM,TAM, BLUE); 
                     break;
@@ -79,7 +93,26 @@ void drawMatrix(char* matrix, mario player) {
         }
     }
     DrawRectangle(player.pos[1]*POS,player.pos[0]*POS, TAM,TAM, RED); 
+
+    DrawRectangle(player.pos[1]*POS,player.pos[0]*POS, 4,4, PINK); 
+    DrawRectangle(player.pos[1]*POS,player.pos[0]*POS+TAM-1, 4,4, PINK); 
 }
+
+
+void calculaCantosInt(mario* player) {
+    player->intPos[0] = (int)player->pos[0];
+    player->intPos[1] = (int)player->pos[1];
+
+    player->intPos[2] = (int)player->pos[0];
+    player->intPos[3] = (int)(player->pos[1]+1);
+
+    player->intPos[4] = (int)(player->pos[0]+1);
+    player->intPos[5] = (int)player->pos[1];
+
+    player->intPos[6] = (int)(player->pos[0]+1);
+    player->intPos[7] = (int)(player->pos[1]+1);
+}
+
 
 int main() {
 	
@@ -104,12 +137,30 @@ int main() {
 */
 
 	InitWindow((NLIN-1)*TAM,(NCOL-1)*TAM,"shdfhsdfhshf");	
-
+    SetTargetFPS(60);
 	while (!WindowShouldClose()) {
-		if (IsKeyPressed(KEY_UP)) player1->pos[0] --;
-		if (IsKeyPressed(KEY_DOWN)) player1->pos[0] ++;
-		if (IsKeyPressed(KEY_RIGHT)) player1->pos[1] ++;
-		if (IsKeyPressed(KEY_LEFT)) player1->pos[1] --;
+		if (IsKeyDown(KEY_W)) player1->pos[0] -= SPEED;
+		if (IsKeyDown(KEY_S)) player1->pos[0] += SPEED;
+		if (IsKeyDown(KEY_D)) player1->pos[1] += SPEED;
+		if (IsKeyDown(KEY_A)) player1->pos[1] -= SPEED;
+        player1->pos[0] += GRAVITY;      //simples implementação da gravidade
+                                         //O que segue é um sistema simples para colisão com plataformas, utilizando ocmo base a posição em inteiros do player (isso descobre em qual quadrado da grade se encontra o player), a partir disso, facilitado pelo fato de que todas as plataformas estao alinhadas a uma grade, fica facil checar se a colisão ocorre ou não (isso vai quebrar se a velocidade for muito grande....
+        //player1->intPos[0] = (int)player1->pos[0];
+        //player1->intPos[1] = (int)player1->pos[1];
+        calculaCantosInt(player1);
+        if (matrix[(player1->intPos[0]+1)*NCOL+player1->intPos[1]] == 'Z') player1->pos[0] = player1->intPos[0];
+        else if (matrix[(player1->intPos[2]+1)*NCOL+player1->intPos[3]] == 'Z') player1->pos[0] = player1->intPos[0];
+
+        else if (matrix[(player1->intPos[4]-1)*NCOL+player1->intPos[5]] == 'Z') player1->pos[0] = player1->intPos[4];
+        else if (matrix[(player1->intPos[6]-1)*NCOL+player1->intPos[7]] == 'Z') player1->pos[0] = player1->intPos[4];
+
+
+        else if (matrix[(player1->intPos[0])*NCOL+player1->intPos[1]+1] == 'Z') player1->pos[1] = player1->intPos[1];
+        else if (matrix[(player1->intPos[4])*NCOL+player1->intPos[5]+1] == 'Z') player1->pos[1] = player1->intPos[1];
+
+        else if (matrix[(player1->intPos[2])*NCOL+player1->intPos[3]-1] == 'Z') player1->pos[1] = player1->intPos[3];
+        else if (matrix[(player1->intPos[6])*NCOL+player1->intPos[7]-1] == 'Z') player1->pos[1] = player1->intPos[3];
+
 		BeginDrawing();
 			ClearBackground(BLACK);
             drawMatrix(matrix,structThing);
