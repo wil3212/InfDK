@@ -16,8 +16,8 @@
 #define POS 20 
 #define TAM 20
 
-#define SPEED .15
-#define GRAVITY .1
+#define SPEED .25
+#define GRAVITY .01
 
 typedef struct player {
 	float pos[2];
@@ -114,6 +114,12 @@ void calculaCantosInt(mario* player) {
     player->intPos[7] = (int)(player->pos[1]+offset);
 }
 
+void mover(mario* player) {
+    if (player->verticalV > .7) player->verticalV = .7;
+    player->pos[0] += player->verticalV;
+
+}
+                            
 
 int main() {
 	
@@ -161,11 +167,23 @@ int main() {
         if (matrix[(player1->intPos[2])*NCOL+player1->intPos[3]-1] == 'Z') { player1->pos[1] = player1->intPos[3]; calculaCantosInt(player1);}
         if (matrix[(player1->intPos[6])*NCOL+player1->intPos[7]-1] == 'Z') { player1->pos[1] = player1->intPos[7]; calculaCantosInt(player1);}
 
-        player1->pos[0] += GRAVITY;      
+        player1->verticalV += GRAVITY;      
+        mover(player1);
         calculaCantosInt(player1);
-        if (matrix[(player1->intPos[0]+1)*NCOL+player1->intPos[1]] == 'Z') {player1->pos[0] = player1->intPos[0]; calculaCantosInt(player1);}
-        if (matrix[(player1->intPos[2]+1)*NCOL+player1->intPos[3]] == 'Z') {player1->pos[0] = player1->intPos[0]; calculaCantosInt(player1);}
+        if (matrix[(player1->intPos[0]+1)*NCOL+player1->intPos[1]] == 'Z') {
+            player1->pos[0] = player1->intPos[0]; 
+            calculaCantosInt(player1);
+            player1->verticalV = 0.0;
 
+        }
+
+        if (matrix[(player1->intPos[2]+1)*NCOL+player1->intPos[3]] == 'Z') {
+            player1->pos[0] = player1->intPos[0]; 
+            calculaCantosInt(player1);
+            player1->verticalV = 0.0;
+        }
+                             
+        printf("current Velocity: %.2f \n", player1->verticalV);
 
 
 
