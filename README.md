@@ -13,5 +13,11 @@ gcc main.c -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 
 * Sobre Termux:
-    * Uma vez aberto Termux:X11
-    * termux-x11 :0
+    1. Uma vez aberto Termux:X11 (aplicativo)
+    2. Para abrir o servidor: termux-x11 :0
+    3. source DISPLAY:=0 (no mesmo terminal da execussão)
+
+
+
+
+    

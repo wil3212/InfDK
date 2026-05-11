@@ -23,6 +23,7 @@ typedef struct player {
 	float pos[2];
     int intPos[8];      // possição em inteiros dos 4 cantos do player, da esquerda para a direita, de cima para baixo; ex: intPos[0] = cord x do cando superior esquerdo; intPos[5] = cord y do canto inferior esquerdo.
     float verticalV;    // velocidade vertical sera usada para lidar gravidade, quanto a saltos eu cair de plataformas
+    int canTP;
 } mario; //sim, nome horrivel para isso
 
 
@@ -128,6 +129,7 @@ int main() {
     char* matrix = carregaMapa(player1);
     printaMatriz(matrix);
 
+    player1->canTP = 1;
 /*
     while (1) {
 	    char tmpC;
@@ -147,10 +149,20 @@ int main() {
     SetTargetFPS(60);
 	while (!WindowShouldClose()) {
         //O que segue é um sistema *ruim* para colisão com plataformas, utilizando ocmo base a posição em inteiros do player (isso descobre em qual quadrado da grade se encontra o player), a partir disso, facilitado pelo fato de que todas as plataformas estao alinhadas a uma grade, fica facil checar se a colisão ocorre ou não (isso vai quebrar se a velocidade for muito grande....
-		if (IsKeyDown(KEY_W)) player1->pos[0] -= SPEED;
+		if (IsKeyDown(KEY_W) && player1->canTP) player1->pos[0] -= SPEED;
         calculaCantosInt(player1);
-        if (matrix[(player1->intPos[4]-1)*NCOL+player1->intPos[5]] == 'Z') { player1->pos[0] = player1->intPos[4]; calculaCantosInt(player1);}
-        if (matrix[(player1->intPos[6]-1)*NCOL+player1->intPos[7]] == 'Z') { player1->pos[0] = player1->intPos[4]; calculaCantosInt(player1);}
+        if (matrix[(player1->intPos[4]-1)*NCOL+player1->intPos[5]] == 'Z' && player1->canTP) { 
+            player1->pos[0] = player1->intPos[4]; 
+            calculaCantosInt(player1);
+            player1->verticalV = 0.0;
+            player1->canTP = 0; 
+        }
+        if (matrix[(player1->intPos[6]-1)*NCOL+player1->intPos[7]] == 'Z' && player1->canTP) { 
+            player1->pos[0] = player1->intPos[4]; 
+            calculaCantosInt(player1);
+            player1->verticalV = 0.0;
+            player1->canTP = 0; 
+        }
 
 		if (IsKeyDown(KEY_S)) player1->pos[0] += SPEED;
         calculaCantosInt(player1);
@@ -174,13 +186,14 @@ int main() {
             player1->pos[0] = player1->intPos[0]; 
             calculaCantosInt(player1);
             player1->verticalV = 0.0;
-
+            player1->canTP = 1;
         }
 
         if (matrix[(player1->intPos[2]+1)*NCOL+player1->intPos[3]] == 'Z') {
             player1->pos[0] = player1->intPos[0]; 
             calculaCantosInt(player1);
             player1->verticalV = 0.0;
+            player1->canTP = 1; 
         }
                              
         printf("current Velocity: %.2f \n", player1->verticalV);
