@@ -6,7 +6,7 @@ void calculaCantosInt(mario* player) {
     player->intPos[0] = (int) player->pos[0];
     player->intPos[1] = (int) player->pos[1];
     
-// As próximas linhas calculam as posições inteiras dos cantos do jogador, considerando que o jogador ocupa um espaço de 2x2 blocos no mapa.
+  // As próximas linhas calculam as posições inteiras dos cantos do jogador, considerando que o jogador ocupa um espaço de 2x2 blocos no mapa.
     player->intPos[2] = (int) player->pos[0];
     player->intPos[3] = (int) (player->pos[1] + 1);
 
