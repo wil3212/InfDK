@@ -26,7 +26,7 @@ typedef struct player {
 
 // Declaração das funções utilizadas no jogo, incluindo funções para manipulação do mapa, renderização e lógica do jogador.
 char* alocaMatriz(void);
-char* carregaMapa(mario* player);
+char* carregaMapa(mario* player, int fase);
 void printaMatriz(char* matrix);
 void printaMatriz2(char* matrix, const mario player);
 void drawMatrix(char* matrix, const mario player);

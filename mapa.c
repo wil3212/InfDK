@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "mapa.h"
+#include <string.h>
 
 char* alocaMatriz(void) {
     // Aloca memória para armazenar o mapa como uma matriz unidimensional
     return (char*) malloc(sizeof(char) * NCOL * NLIN);
 }
 
-char* carregaMapa(mario* player) {
+char* carregaMapa(mario* player,int fase) {
     // Variável temporária para cada caractere lido do arquivo
     char tmpChar;
 
@@ -19,8 +20,19 @@ char* carregaMapa(mario* player) {
         matrix[i] = ' ';
     }
 
+    // Forma muito ruim de fazer a string do nome do arquivo de mapaX.txt
+    char *nome1 = "mapa";
+    char *nome2 = ".txt";
+    char mapaNome[10];
+    for (int i=0;i<4;i++)
+      mapaNome[i] = nome1[i];
+    mapaNome[4] = 48+fase;
+    for (int i=0;i<5;i++)
+      mapaNome[i+5] = nome2[i];
+
+
     // Abre o arquivo de mapa para leitura
-    FILE* maps = fopen("mapa.txt", "r");
+    FILE* maps = fopen(mapaNome, "r");
     if (maps == NULL) {
         printf("Error: Could not open file.\n");
         free(matrix); // Libera memória se o arquivo não puder ser aberto
@@ -63,7 +75,7 @@ char* carregaMapa(mario* player) {
 
 bool isSolid(char block) {
     // Retorna true se o bloco for um tipo sólido que bloqueia o jogador
-    return (block == 'F' || block == 'Z' || block == 'S' || block == 'H' || block == 'D');
+    return (block == 'Z');
 }
 
 void printaMatriz(char* matrix) {
