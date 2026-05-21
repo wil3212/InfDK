@@ -22,15 +22,26 @@ typedef struct player {
     float verticalV;
     int jumpCount;
     bool canJump;
+    bool isClimbing;
 } mario;
 
+/*
+// Optei por comentar todos esses protótipos repetidos
 // Declaração das funções utilizadas no jogo, incluindo funções para manipulação do mapa, renderização e lógica do jogador.
+// MAPA
 char* alocaMatriz(void);
 char* carregaMapa(mario* player, int fase);
 void printaMatriz(char* matrix);
 void printaMatriz2(char* matrix, const mario player);
-void drawMatrix(char* matrix, const mario player);
-void calculaCantosInt(mario* player);
 bool isSolid(char block);
+//Render
+void drawMatrix(char* matrix, const mario player);
+*/
+
+// game.c
+void calculaCantosInt(mario* player);              // ok
+bool isSolid(char block);
+
+
 
 #endif // GAME_H

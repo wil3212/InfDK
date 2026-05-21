@@ -1,4 +1,4 @@
-#include "player.h"
+#include "game.h"
 /** A função calculaCantosInt é responsável por calcular as posições inteiras dos cantos do jogador com base em sua posição atual. 
  *  Ela armazena essas posições em um array intPos dentro da estrutura mario, que pode ser usado para verificar colisões ou interações com o ambiente do jogo.
  */
@@ -15,4 +15,9 @@ void calculaCantosInt(mario* player) {
 
     player->intPos[6] = (int) (player->pos[0] + 1);
     player->intPos[7] = (int) (player->pos[1] + 1);
+}
+
+bool isSolid(char block) {
+    // Retorna true se o bloco for um tipo sólido que bloqueia o jogador
+    return (block == 'Z');
 }

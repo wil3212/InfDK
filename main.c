@@ -3,8 +3,6 @@
 * Implementar a logica que faz o player (e futuros inimigos não atravessarem plataformas)
   . Isso vai envolver manter o jogo a um certo FPS, e então checar se o que há abaixo do jogador é uma plataforma.
   . Futuramente, será necessário deixar a posição do jogador como float 
-
-
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,15 +10,8 @@
 #include "game.h"
 #include "mapa.h"
 #include "render.h"
-#include "player.h"
-void menu() {
-  //DrawText(const char *text, int posX, int posY, int fontSize, Color color);
-  DrawText("Menu:",250,250,20, BLUE);
-}
-void menu2() {
-  //DrawText(const char *text, int posX, int posY, int fontSize, Color color);
-  DrawText("Passou de fase!!!",250,250,20, BLUE);
-}
+#include "menu.h"
+
 
 int main(void) {
     // Inicializa a estrutura do jogador
@@ -28,7 +19,9 @@ int main(void) {
     mario* player1 = &structThing;
     int faseAtual = 1;  // Indica qual a fase atual, 1, 2, 3...
     int gameMode = 0;   // 0 caso estejamos no Menu, 1 caso estejamos jogando, 2 caso acessando scores...
-    
+
+    menuOptions* menu = initMenu(); //Inicializa o menu
+
     // Carrega o mapa do arquivo
     char* matrix = carregaMapa(player1,faseAtual);
     if (matrix == NULL) {
@@ -43,18 +36,22 @@ int main(void) {
     // Define o FPS alvo para 60
     SetTargetFPS(60);
 
+    bool exit = false;
     // Loop principal do jogo
-    while (!WindowShouldClose()) {
-
+    while (!WindowShouldClose() && !exit) {
       switch (gameMode) {
         case 0:
-          if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W)) gameMode = 1;
+          if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER)) selecionaOpc(menu,&gameMode,&exit);
+          if (menu->selectedOption < NOPTIONS-1)
+            if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) menu->selectedOption++;
+          if (menu->selectedOption > 0)
+            if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) menu->selectedOption--;
           BeginDrawing();
               ClearBackground(BLACK);
-              menu();
+              menuDraw(0,menu);
           EndDrawing();
           break;
-        case 1:
+        case 1: // --> Jogo rodando
           // === 1. MOVIMENTAÇÃO HORIZONTAL (Apenas altera o float, colisão vem depois) ===
           if (IsKeyDown(KEY_D)) player1->pos[1] += SPEED;
           if (IsKeyDown(KEY_A)) player1->pos[1] -= SPEED;
@@ -76,7 +73,6 @@ int main(void) {
               isSolid(matrix[rowBottom * NCOL + (int)(player1->pos[1])])) {
               player1->pos[1] = (float)((int)(player1->pos[1]) + 1.0f);
           }
-
           // === 3. FÍSICA VERTICAL (Gravidade e Pulo) ===
           player1->verticalV += GRAVITY;
           player1->pos[0] += player1->verticalV;
@@ -142,7 +138,7 @@ int main(void) {
           }
           BeginDrawing();
               ClearBackground(BLACK);
-              menu2();
+              menuDraw(1,menu);
           EndDrawing();
           break;
       }
@@ -154,5 +150,3 @@ int main(void) {
     CloseWindow();
     return 0;
 }
-
-

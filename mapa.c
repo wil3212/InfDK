@@ -30,7 +30,6 @@ char* carregaMapa(mario* player,int fase) {
     for (int i=0;i<5;i++)
       mapaNome[i+5] = nome2[i];
 
-
     // Abre o arquivo de mapa para leitura
     FILE* maps = fopen(mapaNome, "r");
     if (maps == NULL) {
@@ -71,11 +70,6 @@ char* carregaMapa(mario* player,int fase) {
 
     fclose(maps); // Fecha o arquivo após a leitura
     return matrix; // Retorna a matriz do mapa preenchida
-}
-
-bool isSolid(char block) {
-    // Retorna true se o bloco for um tipo sólido que bloqueia o jogador
-    return (block == 'Z');
 }
 
 void printaMatriz(char* matrix) {
