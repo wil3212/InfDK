@@ -1,0 +1,19 @@
+#+title: Readme
+
+#DKINF
+
+
+* Nesse ultimo commit:
+- [X] Algumas funções tem mais de um protótipo em diferentes arquivos; (Concluído: 2026-05-20 22:20:25)
+
+- [X] E se juntarmos o player.c, mapa.c e game.c? (Concluído: 2026-05-20 22:20:20)
+
+- [ ] No loop dentro de main, os blocos de código dos switch cases podem "ser escondidos" em funções / outros source files.
+
+** Adicionei o menu.c e menu.h
+** Removi o player.c e player.h, passando seus conteúdos para game.c / game.h
+** Em game.h, removi os protótipos dos outros headers, deixando apenas os das funções de game.c
+** Como modifiquei um pouco os headers / migrei funções de um lugar a outro, modifiquei o makefile de acordo.
+
+* .gitignore
+-> Adicionei o .gitignore para que os arquivos que terminam em .o assim como o arquivo "jogo" não vá para o github, afinal, esses arquivos tem que ser regerados na copilação.
