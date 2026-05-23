@@ -3,7 +3,7 @@
 #DKINF
 
 
-* Nesse ultimo commit:
+* No commit anterior:
 - [X] Algumas funções tem mais de um protótipo em diferentes arquivos; (Concluído: 2026-05-20 22:20:25)
 
 - [X] E se juntarmos o player.c, mapa.c e game.c? (Concluído: 2026-05-20 22:20:20)
@@ -15,5 +15,33 @@
 ** Em game.h, removi os protótipos dos outros headers, deixando apenas os das funções de game.c
 ** Como modifiquei um pouco os headers / migrei funções de um lugar a outro, modifiquei o makefile de acordo.
 
-* .gitignore
+** .gitignore
 -> Adicionei o .gitignore para que os arquivos que terminam em .o assim como o arquivo "jogo" não vá para o github, afinal, esses arquivos tem que ser regerados na copilação.
+
+
+* Implementação da Pausa
+
+- [ ] Resolver "segmentation fault" que ocorre quando 'passa de fase' na ultima fase.
+
+- [ ] Coloquei "{}" temporariamente nos cases pois ficou mais pratico de dar 'fold'
+- [ ] Arrumar os numeros dos cases.
+
+** Sobre carregaMapa
+- Toda vez que a opção de "Iniciar um novo" jogo for chamada, a posição do player (e futuramente dos inimigos) deve ser resetada (com base no mapa);
+- Para isso, teremos que quebrar a função carregaMapa(), para que uma parte dela se dedique exclusivamente a popular a matriz char* com os valores de mapa.txt, tirando dessa função a responsabilidade de atribuir as posições do player (e futuramente os inimigos)
+
+*** O flow sera:
+1. carregaMapa() popula a matriz de char; Isso só deve ocorrer uma unica vez, ficando a matriz então salva em memória e contendo todas as informações sobre o mapa iniciais
+2. Para o player (e para inimigos e demais entidades), suas posições iniciais são atribuídas a seus respectivos structs, podendo variar livremente. Para isso, uma pequena função será feita cuja responsabilidade é fazer essa atribuição das posições nos structs a partir da matriz de caracteres.
+
+- Comentário em mapa.c:
+#+begin_quote
+Desativei essa parte; A ideia vai ser deixar 'P' guardado na char matriz na sua posição original.
+A posição no struct player sera fornecida por outra função
+Futuramente, otimização desse processo consistiria em salvar todos os indexes de posição de player e entidades em uma lista agora (já na leitura do arquivo)
+Mas atualmente, a função secundária simplesmente varerá toda matriz procurando por 'P'
+A função em questõa é a getPoss, ficará declarada em game.c
+#+end_quote
+
+** Sobre os menus:
+- Na função selecionaMenu, caso o player tenha salvo, ter uma opção "continuar"

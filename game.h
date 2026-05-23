@@ -42,6 +42,10 @@ void drawMatrix(char* matrix, const mario player);
 void calculaCantosInt(mario* player);              // ok
 bool isSolid(char block);
 
+void getPoss(char* matriz, mario* player);
+
+
+
 
 
 #endif // GAME_H

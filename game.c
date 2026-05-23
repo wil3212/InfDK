@@ -21,3 +21,15 @@ bool isSolid(char block) {
     // Retorna true se o bloco for um tipo sólido que bloqueia o jogador
     return (block == 'Z');
 }
+
+
+void getPoss(char* matriz, mario* player) {
+  for (int i=0;i<NLIN;i++) {
+    for (int j=0;j<NCOL;j++) {
+      if (matriz[i*NCOL+j] == 'P') {
+        player->pos[1] = j;
+        player->pos[0] = i;
+      }
+    }
+  }
+}

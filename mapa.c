@@ -8,18 +8,15 @@ char* alocaMatriz(void) {
     return (char*) malloc(sizeof(char) * NCOL * NLIN);
 }
 
-char* carregaMapa(mario* player,int fase) {
+char* carregaMapa(int fase) {
     // Variável temporária para cada caractere lido do arquivo
     char tmpChar;
-
     // Aloca a matriz do mapa na memória
     char* matrix = alocaMatriz();
-
     // Inicializa a matriz com espaços em branco
     for (int i = 0; i < NCOL * NLIN; i++) {
         matrix[i] = ' ';
     }
-
     // Forma muito ruim de fazer a string do nome do arquivo de mapaX.txt
     char *nome1 = "mapa";
     char *nome2 = ".txt";
@@ -50,25 +47,30 @@ char* carregaMapa(mario* player,int fase) {
             }
             continue;
         }
-
         // Apenas processa caracteres dentro do limite de colunas definido
         if (col < NCOL) {
             int idx = row * NCOL + col; // Converte coordenada 2D para índice 1D
+
+            /* // Desativei essa parte; A ideia vai ser deixar 'P' guardado na char matriz na sua posição original.
+               // A posição no struct player sera fornecida por outra função
+               // Futuramente, otimização desse processo consistiria em salvar todos os indexes de posição de player e entidades em uma lista agora (já na leitura do arquivo)
+               // Mas atualmente, a função secundária simplesmente varerá toda matriz procurando por 'P'
+               // A função em questõa é a getPoss, ficará declarada em game.c
 
             if (tmpChar == 'P') {
                 // Registra a posição inicial do jogador
                 player->pos[0] = (float) row;
                 player->pos[1] = (float) col;
                 matrix[idx] = ' '; // Substitui 'P' por espaço no mapa
-            } else {
-                matrix[idx] = tmpChar; // Guarda o caractere do mapa na matriz
-            }
-
+                */
+           // } else {
+            matrix[idx] = tmpChar; // Guarda o caractere do mapa na matriz
+           // }
             col++; // Avança para a próxima coluna
         }
     }
-
     fclose(maps); // Fecha o arquivo após a leitura
+    printf("fase atual: %d\n",fase);
     return matrix; // Retorna a matriz do mapa preenchida
 }
 

@@ -13,7 +13,7 @@
 #include "menu.h"
 
 
-int main(void) {
+int main() {
     // Inicializa a estrutura do jogador
     mario structThing = {0};
     mario* player1 = &structThing;
@@ -21,13 +21,15 @@ int main(void) {
     int gameMode = 0;   // 0 caso estejamos no Menu, 1 caso estejamos jogando, 2 caso acessando scores...
 
     menuOptions* menu = initMenu(); //Inicializa o menu
+    menuOptions* menuPausa = initMenuPausa(); //Inicializa o menu
 
     // Carrega o mapa do arquivo
-    char* matrix = carregaMapa(player1,faseAtual);
+    char* matrix = carregaMapa(faseAtual);
     if (matrix == NULL) {
         return 1;
     }
 
+    getPoss(matrix,player1);
     // Imprime a matriz do mapa no console
     printaMatriz(matrix);
 
@@ -40,8 +42,8 @@ int main(void) {
     // Loop principal do jogo
     while (!WindowShouldClose() && !exit) {
       switch (gameMode) {
-        case 0:
-          if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER)) selecionaOpc(menu,&gameMode,&exit);
+        case 0:  // Case 0 -> menu inicial (iniciar jogo, ranking, sair...)
+          if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER)) selecionaOpcMenu(menu,&gameMode,&exit,&matrix,player1,&faseAtual);
           if (menu->selectedOption < NOPTIONS-1)
             if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) menu->selectedOption++;
           if (menu->selectedOption > 0)
@@ -52,6 +54,8 @@ int main(void) {
           EndDrawing();
           break;
         case 1: // --> Jogo rodando
+
+          if (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_TAB)) gameMode = 4;
           // === 1. MOVIMENTAÇÃO HORIZONTAL (Apenas altera o float, colisão vem depois) ===
           if (IsKeyDown(KEY_D)) player1->pos[1] += SPEED;
           if (IsKeyDown(KEY_A)) player1->pos[1] -= SPEED;
@@ -120,6 +124,7 @@ int main(void) {
          
           // === RENDERIZAÇÃO ===
           // Inicia o frame de desenho
+         printf("antes de desenhar %d\n",faseAtual);
           BeginDrawing();
                           // Limpa a tela com cor preta
               ClearBackground(BLACK);
@@ -127,18 +132,31 @@ int main(void) {
               drawMatrix(matrix, *player1);
           EndDrawing();
           break;
-        case 3:
+        case 3: // Tela de "Passou de fase!"
           if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W)) {
             faseAtual++;
-            matrix = carregaMapa(player1,faseAtual);
+            matrix = carregaMapa(faseAtual);
             if (matrix == NULL) {
                 return 1;
             }
+            getPoss(matrix,player1);
             gameMode = 1;
           }
           BeginDrawing();
               ClearBackground(BLACK);
               menuDraw(1,menu);
+          EndDrawing();
+          break;
+        case 4: // Tela "Pausa"
+          if (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_TAB)) gameMode = 1;
+          if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER)) selecionaOpcPausa(menuPausa,&gameMode,&exit);
+          if (menuPausa->selectedOption < NOPTIONS-1)
+            if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) menuPausa->selectedOption++;
+          if (menuPausa->selectedOption > 0)
+            if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) menuPausa->selectedOption--;
+          BeginDrawing();
+              ClearBackground(BLACK);
+              menuDraw(0,menuPausa);
           EndDrawing();
           break;
       }
