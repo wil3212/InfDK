@@ -15,8 +15,6 @@
 
 int main() {
     // Inicializa a estrutura do jogador
-    mario structThing = {0};
-    mario* player1 = &structThing;
     int faseAtual = 1;  // Indica qual a fase atual, 1, 2, 3...
     int gameMode = 0;   // 0 caso estejamos no Menu, 1 caso estejamos jogando, 2 caso acessando scores...
 
@@ -29,7 +27,8 @@ int main() {
         return 1;
     }
 
-    getPoss(matrix,player1);
+    entities* entidades = getEntities(matrix);
+
     // Imprime a matriz do mapa no console
     printaMatriz(matrix);
 
@@ -43,7 +42,7 @@ int main() {
     while (!WindowShouldClose() && !exit) {
       switch (gameMode) {
         case 0:  // Case 0 -> menu inicial (iniciar jogo, ranking, sair...)
-          if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER)) selecionaOpcMenu(menu,&gameMode,&exit,&matrix,player1,&faseAtual);
+          if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER)) selecionaOpcMenu(menu,&gameMode,&exit,&matrix,entidades,&faseAtual);
           if (menu->selectedOption < NOPTIONS-1)
             if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) menu->selectedOption++;
           if (menu->selectedOption > 0)
@@ -55,68 +54,78 @@ int main() {
           break;
         case 1: // --> Jogo rodando
 
+          // mechhe os bixos!
+          for (int i=0;i<entidades->nFlames;i++) {
+
+            if (entidades->flames[i]->isRight) entidades->flames[i]->pos[1] += SPEED*.6;
+            else entidades->flames[i]->pos[1] -= SPEED*.6;
+
+          }
+
+
+
           if (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_TAB)) gameMode = 4;
           // === 1. MOVIMENTAÇÃO HORIZONTAL (Apenas altera o float, colisão vem depois) ===
-          if (IsKeyDown(KEY_D)) player1->pos[1] += SPEED;
-          if (IsKeyDown(KEY_A)) player1->pos[1] -= SPEED;
+          if (IsKeyDown(KEY_D)) entidades->player->pos[1] += SPEED;
+          if (IsKeyDown(KEY_A)) entidades->player->pos[1] -= SPEED;
 
           // === 2. COLISÃO HORIZONTAL (O SEGREDO ESTÁ AQUI) ===
-          calculaCantosInt(player1);
+          calculaCantosInt(entidades->player);
           // Checamos a colisão lateral usando um pequeno offset (0.1) para não bater no chão
           // Em vez de usar intPos[4] e [5] (que estão no chão), checamos a altura do "corpo"
-          int rowTop = (int)(player1->pos[0] + 0.1f);
-          int rowBottom = (int)(player1->pos[0] + 0.9f); // 0.9 evita tocar a linha do chão
+          int rowTop = (int)(entidades->player->pos[0] + 0.1f);
+          int rowBottom = (int)(entidades->player->pos[0] + 0.9f); // 0.9 evita tocar a linha do chão
 
           // Colisão Direita
-          if (isSolid(matrix[rowTop * NCOL + (int)(player1->pos[1] + 1.0f)]) ||
-              isSolid(matrix[rowBottom * NCOL + (int)(player1->pos[1] + 1.0f)])) {
-              player1->pos[1] = (float)((int)(player1->pos[1] + 1.0f) - 1.0f);
+          if (isSolid(matrix[rowTop * NCOL + (int)(entidades->player->pos[1] + 1.0f)]) ||
+              isSolid(matrix[rowBottom * NCOL + (int)(entidades->player->pos[1] + 1.0f)])) {
+              entidades->player->pos[1] = (float)((int)(entidades->player->pos[1] + 1.0f) - 1.0f);
           }
           // Colisão Esquerda
-          if (isSolid(matrix[rowTop * NCOL + (int)(player1->pos[1])]) ||
-              isSolid(matrix[rowBottom * NCOL + (int)(player1->pos[1])])) {
-              player1->pos[1] = (float)((int)(player1->pos[1]) + 1.0f);
+          if (isSolid(matrix[rowTop * NCOL + (int)(entidades->player->pos[1])]) ||
+              isSolid(matrix[rowBottom * NCOL + (int)(entidades->player->pos[1])])) {
+              entidades->player->pos[1] = (float)((int)(entidades->player->pos[1]) + 1.0f);
           }
           // === 3. FÍSICA VERTICAL (Gravidade e Pulo) ===
-          player1->verticalV += GRAVITY;
-          player1->pos[0] += player1->verticalV;
-          calculaCantosInt(player1); // Atualiza para checar o chão
+          entidades->player->verticalV += GRAVITY;
+          entidades->player->pos[0] += entidades->player->verticalV;
+          calculaCantosInt(entidades->player); // Atualiza para checar o chão
 
           bool grounded = false;
           // Colisão com o Chão (Apenas se estiver caindo)
-          if (player1->verticalV >= 0) {
-              if (isSolid(matrix[player1->intPos[4] * NCOL + player1->intPos[5]]) ||
-                  isSolid(matrix[player1->intPos[6] * NCOL + player1->intPos[7]])) {
-                  player1->pos[0] = (float)player1->intPos[0];
-                  player1->verticalV = 0;
+          if (entidades->player->verticalV >= 0) {
+              if (isSolid(matrix[entidades->player->intPos[4] * NCOL + entidades->player->intPos[5]]) ||
+                  isSolid(matrix[entidades->player->intPos[6] * NCOL + entidades->player->intPos[7]])) {
+                  entidades->player->pos[0] = (float)entidades->player->intPos[0];
+                  entidades->player->verticalV = 0;
                   grounded = true;
-                  player1->jumpCount = 0;
+                  entidades->player->jumpCount = 0;
               }
           }
 
           // Colisão com o Teto
-          if (player1->verticalV < 0) {
-              if (isSolid(matrix[player1->intPos[0] * NCOL + player1->intPos[1]]) ||
-                  isSolid(matrix[player1->intPos[2] * NCOL + player1->intPos[3]])) {
-                  player1->pos[0] = (float)(player1->intPos[0] + 1);
-                  player1->verticalV = 0;
+          if (entidades->player->verticalV < 0) {
+              if (isSolid(matrix[entidades->player->intPos[0] * NCOL + entidades->player->intPos[1]]) ||
+                  isSolid(matrix[entidades->player->intPos[2] * NCOL + entidades->player->intPos[3]])) {
+                  entidades->player->pos[0] = (float)(entidades->player->intPos[0] + 1);
+                  entidades->player->verticalV = 0;
               }
           }
 
           // === 4. LÓGICA DE PULO (Melhorada) ===
           if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W)) {
               if (grounded) {
-                  player1->verticalV = JUMP_FORCE;
-                  player1->jumpCount = 1;
+                  entidades->player->verticalV = JUMP_FORCE;
+                  entidades->player->jumpCount = 1;
               }
-             else if (player1->jumpCount == 1) {
-                 player1->verticalV = D_JUMP_FORCE;
-                 player1->jumpCount = 2;
+             else if (entidades->player->jumpCount == 1) {
+                 entidades->player->verticalV = D_JUMP_FORCE;
+                 entidades->player->jumpCount = 2;
              }
           }
 
          // Checa se player está na porta
-         if (matrix[(int)(player1->pos[0])*NCOL+(int)(player1->pos[1])] == 'F') {
+         if (matrix[(int)(entidades->player->pos[0])*NCOL+(int)(entidades->player->pos[1])] == 'F') {
            gameMode = 3;
            printf("encostou no F\nfase atual: %d\n",faseAtual);
          }
@@ -124,12 +133,13 @@ int main() {
          
           // === RENDERIZAÇÃO ===
           // Inicia o frame de desenho
-         printf("antes de desenhar %d\n",faseAtual);
+         //printf("antes de desenhar %d\n",faseAtual);
           BeginDrawing();
                           // Limpa a tela com cor preta
               ClearBackground(BLACK);
               // Desenha o mapa e o jogador
-              drawMatrix(matrix, *player1);
+              drawMatrix(matrix, entidades);
+              DrawFPS(400,400);
           EndDrawing();
           break;
         case 3: // Tela de "Passou de fase!"
@@ -139,7 +149,7 @@ int main() {
             if (matrix == NULL) {
                 return 1;
             }
-            getPoss(matrix,player1);
+            entidades = getEntities(matrix);
             gameMode = 1;
           }
           BeginDrawing();

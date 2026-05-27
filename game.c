@@ -1,4 +1,5 @@
 #include "game.h"
+#include <stdlib.h>
 /** A função calculaCantosInt é responsável por calcular as posições inteiras dos cantos do jogador com base em sua posição atual. 
  *  Ela armazena essas posições em um array intPos dentro da estrutura mario, que pode ser usado para verificar colisões ou interações com o ambiente do jogo.
  */
@@ -22,14 +23,62 @@ bool isSolid(char block) {
     return (block == 'Z');
 }
 
+mario* initPlayer() {
+  mario* tmp = (mario*) malloc(sizeof(mario));
+  tmp->pos[0] = 0.0;
+  tmp->pos[1] = 0.0;
+  for (int i=0;i<8;i++)
+    tmp->intPos[i] = 0;
+  tmp->verticalV = 0.0;
+  tmp->jumpCount = 0;
+  tmp->canJump = 0;
+  tmp->isClimbing = 0;
+  return tmp;
+}
+
+flame* initFlame() {
+  flame* tmp = (flame*) malloc(sizeof(flame));
+  tmp->pos[0] = 0.0;
+  tmp->pos[1] = 0.0;
+  for (int i=0;i<8;i++)
+    tmp->intPos[i] = 0;
+  return tmp;
+}
 
 void getPoss(char* matriz, mario* player) {
   for (int i=0;i<NLIN;i++) {
     for (int j=0;j<NCOL;j++) {
-      if (matriz[i*NCOL+j] == 'P') {
+      if (matriz[i*NCOL+j] == 'p') {
         player->pos[1] = j;
         player->pos[0] = i;
       }
     }
   }
+}
+
+entities* getEntities(char* matriz) {
+  entities* lista = malloc(sizeof(entities));
+  lista->nFlames = 0;
+  for (int i=0;i<NLIN;i++) {
+    for (int j=0;j<NCOL;j++) {
+      if (matriz[i*NCOL+j] == 'P') {
+        mario* tmp = initPlayer();
+        lista->player = tmp;
+        tmp->pos[1] = j;
+        tmp->pos[0] = i;
+      }
+      if (matriz[i*NCOL+j] == 'E') {
+        flame* tmp = initFlame();
+        lista->flames[lista->nFlames] = tmp;
+        lista->nFlames++;
+        tmp->pos[1] = j;
+        tmp->pos[0] = i;
+        tmp->alive = 1;
+        if (lista->nFlames % 2)
+          tmp->isRight = 1;
+        else tmp->isRight = 0;
+      }
+    }
+  }
+  return lista;
 }

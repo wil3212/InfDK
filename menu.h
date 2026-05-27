@@ -19,7 +19,7 @@ typedef struct menu {
 
 void menuDraw(int page, menuOptions* menu); // 0 para o menu inicial, 1 para a pagina de pasosu de fase,...
 menuOptions* initMenu(); // Ini..
-void selecionaOpcMenu(menuOptions* menu,int *gameMode, bool *exit, char** matriz, mario *player, int* fase);
+void selecionaOpcMenu(menuOptions* menu,int *gameMode, bool *exit, char** matriz,entities* entidades, int* fase);
 
 menuOptions* initMenuPausa();
 void selecionaOpcPausa(menuOptions* menu,int *gameMode, bool *exit);

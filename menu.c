@@ -32,13 +32,13 @@ void menuDraw(int page, menuOptions* menu) {
 
 }
 
-void selecionaOpcMenu(menuOptions* menu,int *gameMode, bool *exit, char** matriz, mario* player,int *fase) {
+void selecionaOpcMenu(menuOptions* menu,int *gameMode, bool *exit, char** matriz,entities* entidades,int *fase) {
   switch (menu->selectedOption) {
     case 0:
       *fase = 1;
       *matriz = carregaMapa(*fase);
       printf("dentro do menu %d\n",*fase);
-      getPoss(*matriz,player);
+      *entidades = *getEntities(*matriz);
       *gameMode = 1;
       break;
     case 2:

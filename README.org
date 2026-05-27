@@ -3,7 +3,7 @@
 #DKINF
 
 
-* No commit anterior:
+* No commit anterior anterior:
 - [X] Algumas funções tem mais de um protótipo em diferentes arquivos; (Concluído: 2026-05-20 22:20:25)
 
 - [X] E se juntarmos o player.c, mapa.c e game.c? (Concluído: 2026-05-20 22:20:20)
@@ -19,7 +19,7 @@
 -> Adicionei o .gitignore para que os arquivos que terminam em .o assim como o arquivo "jogo" não vá para o github, afinal, esses arquivos tem que ser regerados na copilação.
 
 
-* Implementação da Pausa
+* Implementação da Pausa (commit anterior)
 
 - [ ] Resolver "segmentation fault" que ocorre quando 'passa de fase' na ultima fase.
 
@@ -45,3 +45,19 @@ A função em questõa é a getPoss, ficará declarada em game.c
 
 ** Sobre os menus:
 - Na função selecionaMenu, caso o player tenha salvo, ter uma opção "continuar"
+
+* Inimigos?1 (commit atual)
+- [X] Fazer uma função que inicializa os structs do player e dos inimigos. (Concluído: 2026-05-25 17:26:35)
+  - [X] Lista de Entidades: (Concluído: 2026-05-25 19:44:14)
+    Na parte da movimentação, a gravidade por exemplo, deve ser aplicada a todas as entidades.
+    Outras operações também são aplicadas a todas as entidades...
+    * Por hora, ao invez de uma lista, vou usar um struct.
+
+
+
+- [ ] Melhorar a logica de colisão.
+"Funcionalizar a logica de colisão"
+- [ ] MELHORAR OS NOMES DOS STRUCTS; 'mario' é horrível!
+
+- [ ] arrumar os pulos (para ser como DK, não pode ter strafe)
+- [ ] No final, tem que dar um "free" nos structs..
