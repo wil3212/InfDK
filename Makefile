@@ -5,7 +5,7 @@ LIBS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 TARGET = jogo
 
 # Arquivos fonte do projeto e seus objetos correspondentes
-SRC = main.c mapa.c player.c render.c
+SRC = main.c mapa.c game.c render.c menu.c
 OBJ = $(SRC:.c=.o)
 
 # Regra padrão: compila o executável final

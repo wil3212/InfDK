@@ -3,6 +3,6 @@
 
 #include "game.h"
 
-void drawMatrix(char* matrix, const mario player);
+void drawMatrix(char* matrix, entities* entidades);
 
 #endif // RENDER_H

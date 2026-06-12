@@ -3,8 +3,6 @@
 * Implementar a logica que faz o player (e futuros inimigos não atravessarem plataformas)
   . Isso vai envolver manter o jogo a um certo FPS, e então checar se o que há abaixo do jogador é uma plataforma.
   . Futuramente, será necessário deixar a posição do jogador como float 
-
-
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,28 +10,130 @@
 #include "game.h"
 #include "mapa.h"
 #include "render.h"
-#include "player.h"
-void menu() {
-  //DrawText(const char *text, int posX, int posY, int fontSize, Color color);
-  DrawText("Menu:",250,250,20, BLUE);
+#include "menu.h"
+
+typedef struct {
+  int score;
+  int kills;
+  int secrets;
+  char name[40];
+} player_score;
+
+void calculaCantosInt2(base* entity) {
+    entity->intPos[0] = (int) entity->pos[0];
+    entity->intPos[1] = (int) entity->pos[1];
+
+  // As próximas linhas calculam as posições inteiras dos cantos do jogador, considerando que o jogador ocupa um espaço de 2x2 blocos no mapa.
+    entity->intPos[2] = (int) entity->pos[0];
+    entity->intPos[3] = (int) (entity->pos[1] + 1);
+
+    entity->intPos[4] = (int) (entity->pos[0] + 1);
+    entity->intPos[5] = (int) entity->pos[1];
+
+    entity->intPos[6] = (int) (entity->pos[0] + 1);
+    entity->intPos[7] = (int) (entity->pos[1] + 1);
 }
-void menu2() {
-  //DrawText(const char *text, int posX, int posY, int fontSize, Color color);
-  DrawText("Passou de fase!!!",250,250,20, BLUE);
+void colisionCheck(base *entity, int direction, char* matrix) {
+  switch (direction) {
+    case 0:
+      // Colisão com o Teto
+      if (entity->verticalV < 0) {
+          calculaCantosInt2(entity);
+          if (isSolid(matrix[entity->intPos[0] * NCOL + entity->intPos[1]]) ||
+              isSolid(matrix[entity->intPos[2] * NCOL + entity->intPos[3]])) {
+                entity->pos[0] = (float)(entity->intPos[0] + 1);
+                entity->verticalV = 0;
+          }
+      }
+      else
+        entity->moved[0] = 0;
+      break;
+    case 1: // A
+      int rowTop = (int)(entity->pos[0] + 0.1f);
+      int rowBottom = (int)(entity->pos[0] + 0.9f);
+      if (isSolid(matrix[rowTop * NCOL + (int)(entity->pos[1])]) ||
+          isSolid(matrix[rowBottom * NCOL + (int)(entity->pos[1])])) {
+          entity->pos[1] = (float)((int)(entity->pos[1]) + 1.0f);
+      }
+      entity->moved[1] = 0;
+      break;
+    case 2:
+      if (entity->verticalV >= 0) {
+          calculaCantosInt2(entity);
+          if (isSolid(matrix[entity->intPos[4] * NCOL + entity->intPos[5]]) ||
+              isSolid(matrix[entity->intPos[6] * NCOL + entity->intPos[7]])) {
+                entity->pos[0] = (float)entity->intPos[0];
+                entity->verticalV = 0;
+                entity->grounded = 1;
+                entity->jumpCount = 0;
+          }
+      }
+      entity->moved[2] = 0;
+      break;
+    case 3: // D
+      rowTop = (int)(entity->pos[0] + 0.1f);
+      rowBottom = (int)(entity->pos[0] + 0.9f);
+      if (isSolid(matrix[rowTop * NCOL + (int)(entity->pos[1] + 1.0f)]) ||
+          isSolid(matrix[rowBottom * NCOL + (int)(entity->pos[1] + 1.0f)])) {
+            entity->pos[1] = (float)((int)(entity->pos[1] + 1.0f) - 1.0f);
+      }
+      entity->moved[3] = 0;
+      break;
+  }
+}
+void colisionCheckMain(base *entity, char* matrix) {
+  for (int i=0;i<4;i++)
+    if (entity->moved[i])
+      colisionCheck(entity, i, matrix);
 }
 
-int main(void) {
+
+void move(base *entity, char mode) {
+  switch(mode) {
+    case 'A':
+      entity->pos[1] -= SPEED * entity->speedFactor;
+      entity->moved[1] = 1;
+      break;
+    case 'D':
+      entity->pos[1] += SPEED * entity->speedFactor;
+      entity->moved[3] = 1;
+      break;
+    case 'W':
+      // === 4. LÓGICA DE PULO (Melhorada) ===
+      if (entity->jumpCount == 0 && entity->grounded) {
+          entity->verticalV = JUMP_FORCE;
+          entity->jumpCount = 1;
+      }
+      else if (entity->jumpCount == 1) {
+          entity->verticalV = D_JUMP_FORCE;
+          entity->jumpCount = 2;
+      }
+      entity->moved[0] = 1;
+      break;
+    case 'S':
+      entity->verticalV += GRAVITY;
+      entity->pos[0] += entity->verticalV;
+      entity->moved[2] = 1;
+      break;
+  }
+}
+
+
+int main() {
     // Inicializa a estrutura do jogador
-    mario structThing = {0};
-    mario* player1 = &structThing;
     int faseAtual = 1;  // Indica qual a fase atual, 1, 2, 3...
     int gameMode = 0;   // 0 caso estejamos no Menu, 1 caso estejamos jogando, 2 caso acessando scores...
-    
+
+    menuOptions* menu = initMenu(); //Inicializa o menu
+    menuOptions* menuPausa = initMenuPausa(); //Inicializa o menu
+
     // Carrega o mapa do arquivo
-    char* matrix = carregaMapa(player1,faseAtual);
+    char* matrix = carregaMapa(faseAtual);
     if (matrix == NULL) {
         return 1;
     }
+
+    entities* entidades = getEntities(matrix);
 
     // Imprime a matriz do mapa no console
     printaMatriz(matrix);
@@ -43,80 +143,52 @@ int main(void) {
     // Define o FPS alvo para 60
     SetTargetFPS(60);
 
+    bool exit = false;
     // Loop principal do jogo
-    while (!WindowShouldClose()) {
-
+    while (!WindowShouldClose() && !exit) {
       switch (gameMode) {
-        case 0:
-          if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W)) gameMode = 1;
+        case 0:  // Case 0 -> menu inicial (iniciar jogo, ranking, sair...)
+          if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER)) selecionaOpcMenu(menu,&gameMode,&exit,&matrix,entidades,&faseAtual);
+          if (menu->selectedOption < NOPTIONS-1)
+            if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) menu->selectedOption++;
+          if (menu->selectedOption > 0)
+            if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) menu->selectedOption--;
           BeginDrawing();
               ClearBackground(BLACK);
-              menu();
+              menuDraw(0,menu);
           EndDrawing();
           break;
-        case 1:
-          // === 1. MOVIMENTAÇÃO HORIZONTAL (Apenas altera o float, colisão vem depois) ===
-          if (IsKeyDown(KEY_D)) player1->pos[1] += SPEED;
-          if (IsKeyDown(KEY_A)) player1->pos[1] -= SPEED;
+        case 1: // --> Jogo rodando
+          if (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_TAB)) gameMode = 4;
 
-          // === 2. COLISÃO HORIZONTAL (O SEGREDO ESTÁ AQUI) ===
-          calculaCantosInt(player1);
-          // Checamos a colisão lateral usando um pequeno offset (0.1) para não bater no chão
-          // Em vez de usar intPos[4] e [5] (que estão no chão), checamos a altura do "corpo"
-          int rowTop = (int)(player1->pos[0] + 0.1f);
-          int rowBottom = (int)(player1->pos[0] + 0.9f); // 0.9 evita tocar a linha do chão
-
-          // Colisão Direita
-          if (isSolid(matrix[rowTop * NCOL + (int)(player1->pos[1] + 1.0f)]) ||
-              isSolid(matrix[rowBottom * NCOL + (int)(player1->pos[1] + 1.0f)])) {
-              player1->pos[1] = (float)((int)(player1->pos[1] + 1.0f) - 1.0f);
-          }
-          // Colisão Esquerda
-          if (isSolid(matrix[rowTop * NCOL + (int)(player1->pos[1])]) ||
-              isSolid(matrix[rowBottom * NCOL + (int)(player1->pos[1])])) {
-              player1->pos[1] = (float)((int)(player1->pos[1]) + 1.0f);
+          // mechhe os bixos!
+          for (int i=0;i<entidades->nFlames;i++) {
+            if (entidades->flames[i]->isRight)
+              move((base*)entidades->flames[i], 'D');
+            else
+              move((base*)entidades->flames[i], 'A');
           }
 
-          // === 3. FÍSICA VERTICAL (Gravidade e Pulo) ===
-          player1->verticalV += GRAVITY;
-          player1->pos[0] += player1->verticalV;
-          calculaCantosInt(player1); // Atualiza para checar o chão
+          // === 1. MOVIMENTAÇÃO HORIZONTAL (Apenas altera o float, colisão vem depois)
+          if (IsKeyDown(KEY_D)) move((base*)entidades->player,'D');
+          if (IsKeyDown(KEY_A)) move((base*)entidades->player,'A');
 
-          bool grounded = false;
-          // Colisão com o Chão (Apenas se estiver caindo)
-          if (player1->verticalV >= 0) {
-              if (isSolid(matrix[player1->intPos[4] * NCOL + player1->intPos[5]]) ||
-                  isSolid(matrix[player1->intPos[6] * NCOL + player1->intPos[7]])) {
-                  player1->pos[0] = (float)player1->intPos[0];
-                  player1->verticalV = 0;
-                  grounded = true;
-                  player1->jumpCount = 0;
-              }
-          }
 
-          // Colisão com o Teto
-          if (player1->verticalV < 0) {
-              if (isSolid(matrix[player1->intPos[0] * NCOL + player1->intPos[1]]) ||
-                  isSolid(matrix[player1->intPos[2] * NCOL + player1->intPos[3]])) {
-                  player1->pos[0] = (float)(player1->intPos[0] + 1);
-                  player1->verticalV = 0;
-              }
-          }
+          if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W))
+            move((base*)entidades->player, 'W');
 
-          // === 4. LÓGICA DE PULO (Melhorada) ===
-          if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W)) {
-              if (grounded) {
-                  player1->verticalV = JUMP_FORCE;
-                  player1->jumpCount = 1;
-              }
-             else if (player1->jumpCount == 1) {
-                 player1->verticalV = D_JUMP_FORCE;
-                 player1->jumpCount = 2;
-             }
-          }
+          // gravity for all
+          for (int i=0;i<entidades->nFlames;i++)
+            move((base*)entidades->flames[i], 'S');
+          move((base*)entidades->player, 'S');
+
+          for (int i=0;i<entidades->nFlames;i++)
+            colisionCheckMain((base*)entidades->flames[i], matrix);
+        colisionCheckMain((base*)entidades->player, matrix);
+
 
          // Checa se player está na porta
-         if (matrix[(int)(player1->pos[0])*NCOL+(int)(player1->pos[1])] == 'F') {
+         if (matrix[(int)(entidades->player->pos[0])*NCOL+(int)(entidades->player->pos[1])] == 'F') {
            gameMode = 3;
            printf("encostou no F\nfase atual: %d\n",faseAtual);
          }
@@ -124,25 +196,40 @@ int main(void) {
          
           // === RENDERIZAÇÃO ===
           // Inicia o frame de desenho
+         //printf("antes de desenhar %d\n",faseAtual);
           BeginDrawing();
                           // Limpa a tela com cor preta
               ClearBackground(BLACK);
               // Desenha o mapa e o jogador
-              drawMatrix(matrix, *player1);
+              drawMatrix(matrix, entidades);
+              DrawFPS(400,400);
           EndDrawing();
           break;
-        case 3:
+        case 3: // Tela de "Passou de fase!"
           if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W)) {
             faseAtual++;
-            matrix = carregaMapa(player1,faseAtual);
+            matrix = carregaMapa(faseAtual);
             if (matrix == NULL) {
                 return 1;
             }
+            entidades = getEntities(matrix);
             gameMode = 1;
           }
           BeginDrawing();
               ClearBackground(BLACK);
-              menu2();
+              menuDraw(1,menu);
+          EndDrawing();
+          break;
+        case 4: // Tela "Pausa"
+          if (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_TAB)) gameMode = 1;
+          if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER)) selecionaOpcPausa(menuPausa,&gameMode,&exit);
+          if (menuPausa->selectedOption < NOPTIONS-1)
+            if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) menuPausa->selectedOption++;
+          if (menuPausa->selectedOption > 0)
+            if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) menuPausa->selectedOption--;
+          BeginDrawing();
+              ClearBackground(BLACK);
+              menuDraw(0,menuPausa);
           EndDrawing();
           break;
       }
@@ -154,5 +241,3 @@ int main(void) {
     CloseWindow();
     return 0;
 }
-
-

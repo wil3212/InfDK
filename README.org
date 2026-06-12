@@ -1,0 +1,99 @@
+#+title: Readme
+
+#DKINF
+
+
+* No commit anterior anterior:
+- [X] Algumas funções tem mais de um protótipo em diferentes arquivos; (Concluído: 2026-05-20 22:20:25)
+
+- [X] E se juntarmos o player.c, mapa.c e game.c? (Concluído: 2026-05-20 22:20:20)
+
+- [ ] No loop dentro de main, os blocos de código dos switch cases podem "ser escondidos" em funções / outros source files.
+
+** Adicionei o menu.c e menu.h
+** Removi o player.c e player.h, passando seus conteúdos para game.c / game.h
+** Em game.h, removi os protótipos dos outros headers, deixando apenas os das funções de game.c
+** Como modifiquei um pouco os headers / migrei funções de um lugar a outro, modifiquei o makefile de acordo.
+
+** .gitignore
+-> Adicionei o .gitignore para que os arquivos que terminam em .o assim como o arquivo "jogo" não vá para o github, afinal, esses arquivos tem que ser regerados na copilação.
+
+
+* Implementação da Pausa (commit anterior)
+
+- [ ] Resolver "segmentation fault" que ocorre quando 'passa de fase' na ultima fase.
+
+- [ ] Coloquei "{}" temporariamente nos cases pois ficou mais pratico de dar 'fold'
+- [ ] Arrumar os numeros dos cases.
+
+** Sobre carregaMapa
+- Toda vez que a opção de "Iniciar um novo" jogo for chamada, a posição do player (e futuramente dos inimigos) deve ser resetada (com base no mapa);
+- Para isso, teremos que quebrar a função carregaMapa(), para que uma parte dela se dedique exclusivamente a popular a matriz char* com os valores de mapa.txt, tirando dessa função a responsabilidade de atribuir as posições do player (e futuramente os inimigos)
+
+*** O flow sera:
+1. carregaMapa() popula a matriz de char; Isso só deve ocorrer uma unica vez, ficando a matriz então salva em memória e contendo todas as informações sobre o mapa iniciais
+2. Para o player (e para inimigos e demais entidades), suas posições iniciais são atribuídas a seus respectivos structs, podendo variar livremente. Para isso, uma pequena função será feita cuja responsabilidade é fazer essa atribuição das posições nos structs a partir da matriz de caracteres.
+
+- Comentário em mapa.c:
+#+begin_quote
+Desativei essa parte; A ideia vai ser deixar 'P' guardado na char matriz na sua posição original.
+A posição no struct player sera fornecida por outra função
+Futuramente, otimização desse processo consistiria em salvar todos os indexes de posição de player e entidades em uma lista agora (já na leitura do arquivo)
+Mas atualmente, a função secundária simplesmente varerá toda matriz procurando por 'P'
+A função em questõa é a getPoss, ficará declarada em game.c
+#+end_quote
+
+** Sobre os menus:
+- Na função selecionaMenu, caso o player tenha salvo, ter uma opção "continuar"
+
+* Inimigos?1 (commit atual)
+- [X] Fazer uma função que inicializa os structs do player e dos inimigos. (Concluído: 2026-05-25 17:26:35)
+  - [X] Lista de Entidades: (Concluído: 2026-05-25 19:44:14)
+    Na parte da movimentação, a gravidade por exemplo, deve ser aplicada a todas as entidades.
+    Outras operações também são aplicadas a todas as entidades...
+    * Por hora, ao invez de uma lista, vou usar um struct.
+
+
+
+- [ ] Melhorar a logica de colisão.
+"Funcionalizar a logica de colisão"
+- [ ] MELHORAR OS NOMES DOS STRUCTS; 'mario' é horrível!
+
+- [ ] arrumar os pulos (para ser como DK, não pode ter strafe)
+- [ ] No final, tem que dar um "free" nos structs..
+
+* Hoje (11/06/2026)
+- Bom, vou começar fazendo uma função pra colisões;
+
+** Provavelmente duas, uma em função da entidade específica (mario?1) e a outra cujo parametro é lista de entidades
+
+a função verifica uma direção por vez (cima baixo direita esquerda), mas no momento, ela só checa uma certa direção case tenha a necessidade, isto é, por exemplo, ela só deve checar por colisões com o chão caso haja uma velocidade/aceleração em direção ao chão.
+seria muito disperdício checar todas as direções de todas as entidades todo frame...
+
+Todas entidades possuem velocidades verticais e horizontais, alem de acelerações. (atualmente, apenas o struct player possui velocidade, e é apenas vertical; a posição horizontal é atualizada diretamente dado uma constante velocidade ao apertar teclas..)
+
+1. Altera posição
+    Atualmente, o que acontece é que primeiramente a posição do player sofre alterações
+    (seja diretamente modificando com A ou D, ou por meio da gravidade, que altera a velocidadeV e posteriormente alterua sua posição vertical com base nesta)
+2. Checa colisão / teleporte
+   após isto, as colisões são checadas de modo que caso satisfeitas as condições, o player é teleportado.
+- Atualmente, na verdade, se checa ineficientemente colisão nas duas direções.
+
+
+** Plano?!
+1. Movimento -> check
+   a. + 4 flags nos structs de entidade
+        introduzir mais 4 flags no struct das entidades, que devem marcar se foi feito movimento em cada uma das quatro direções.
+        (parece ser uma boa marcar as quatro possibilidades para previnir falhas, e.g movimento grande para a direita e depois a esquerda, feitos no mesmo frame, fariam com que apenas o da esquerda seja verificado, possibilitando do bloco invadir outro pela direita)
+   b. Organização nos "movimentadores"
+      Movimentadores serão todos os mecanismos responsaveis por mover entidades.
+      - Isso enquadra as teclasd que movem o player, a gravidade que deve afetar todas entidades, etc...
+      - Deve-se aqui identificar as funções mais basicas que aparecerão em diferentes circunstâncias, e.g funçãoMove(entidade, direção, duração)?1
+      - Esses movimentadores devem alterar posição (e/ou aceleração), flags de movimento, da entidade movida.
+   c. Colission Checks
+      - O cheque de colisão pode então ser executado eficientemente para todas entidades, utilizando-se das flags em questão garante-se que checks desnecessários não serão feitos.
+
+** Execução:
+a. Quero fazer uma função generica (que funcione para mover qualquer entidade)
+vou usar a estrategia de nesting de structs com casting; sera
+** [ ] remover flags desnecessárias de pulo... (usouse ia?)
