@@ -33,6 +33,11 @@ mario* initPlayer() {
   tmp->jumpCount = 0;
   tmp->canJump = 0;
   tmp->isClimbing = 0;
+  tmp->horizontalV = 0.0; //slippery ground?
+  tmp->speedFactor = 1.0;  // +
+  for (int i=0;i<4;i++)
+    tmp->moved[i] = 0;
+  tmp->grounded = 1;
   return tmp;
 }
 
@@ -42,6 +47,15 @@ flame* initFlame() {
   tmp->pos[1] = 0.0;
   for (int i=0;i<8;i++)
     tmp->intPos[i] = 0;
+  tmp->horizontalV = 0.0; //slippery ground?
+  tmp->verticalV = 0;
+  tmp->speedFactor = 0.6;  // +
+  for (int i=0;i<4;i++)
+    tmp->moved[i] = 0;
+  tmp->grounded = 1;
+  tmp->jumpCount = 0;
+  tmp->isRight = 0; //seg fault
+  tmp->alive = 0;
   return tmp;
 }
 

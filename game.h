@@ -20,19 +20,39 @@
 typedef struct player {
     float pos[2];
     int intPos[8];
+    int moved[4];
+    float speedFactor;  // +
     float verticalV;
+    float horizontalV; //slippery ground?
+    int grounded;
     int jumpCount;
     bool canJump;
     bool isClimbing;
 } mario;
 
-
 typedef struct enemy {
     float pos[2];
     int intPos[8];
+    int moved[4];
+    float speedFactor;  // +
+    float verticalV;
+    float horizontalV; //slippery ground?
+    int grounded;
+    int jumpCount;
     bool alive;
     int isRight; // 0 -> esquerda 1 -> direita
 } flame;
+
+typedef struct { //common to any kind of entity
+    float pos[2];
+    int intPos[8];
+    int moved[4]; // +
+    float speedFactor;  // +
+    float verticalV;
+    float horizontalV; //slippery ground?
+    int grounded;
+    int jumpCount;
+} base;
 
 typedef struct entities {
   mario* player;

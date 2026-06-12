@@ -61,3 +61,39 @@ A função em questõa é a getPoss, ficará declarada em game.c
 
 - [ ] arrumar os pulos (para ser como DK, não pode ter strafe)
 - [ ] No final, tem que dar um "free" nos structs..
+
+* Hoje (11/06/2026)
+- Bom, vou começar fazendo uma função pra colisões;
+
+** Provavelmente duas, uma em função da entidade específica (mario?1) e a outra cujo parametro é lista de entidades
+
+a função verifica uma direção por vez (cima baixo direita esquerda), mas no momento, ela só checa uma certa direção case tenha a necessidade, isto é, por exemplo, ela só deve checar por colisões com o chão caso haja uma velocidade/aceleração em direção ao chão.
+seria muito disperdício checar todas as direções de todas as entidades todo frame...
+
+Todas entidades possuem velocidades verticais e horizontais, alem de acelerações. (atualmente, apenas o struct player possui velocidade, e é apenas vertical; a posição horizontal é atualizada diretamente dado uma constante velocidade ao apertar teclas..)
+
+1. Altera posição
+    Atualmente, o que acontece é que primeiramente a posição do player sofre alterações
+    (seja diretamente modificando com A ou D, ou por meio da gravidade, que altera a velocidadeV e posteriormente alterua sua posição vertical com base nesta)
+2. Checa colisão / teleporte
+   após isto, as colisões são checadas de modo que caso satisfeitas as condições, o player é teleportado.
+- Atualmente, na verdade, se checa ineficientemente colisão nas duas direções.
+
+
+** Plano?!
+1. Movimento -> check
+   a. + 4 flags nos structs de entidade
+        introduzir mais 4 flags no struct das entidades, que devem marcar se foi feito movimento em cada uma das quatro direções.
+        (parece ser uma boa marcar as quatro possibilidades para previnir falhas, e.g movimento grande para a direita e depois a esquerda, feitos no mesmo frame, fariam com que apenas o da esquerda seja verificado, possibilitando do bloco invadir outro pela direita)
+   b. Organização nos "movimentadores"
+      Movimentadores serão todos os mecanismos responsaveis por mover entidades.
+      - Isso enquadra as teclasd que movem o player, a gravidade que deve afetar todas entidades, etc...
+      - Deve-se aqui identificar as funções mais basicas que aparecerão em diferentes circunstâncias, e.g funçãoMove(entidade, direção, duração)?1
+      - Esses movimentadores devem alterar posição (e/ou aceleração), flags de movimento, da entidade movida.
+   c. Colission Checks
+      - O cheque de colisão pode então ser executado eficientemente para todas entidades, utilizando-se das flags em questão garante-se que checks desnecessários não serão feitos.
+
+** Execução:
+a. Quero fazer uma função generica (que funcione para mover qualquer entidade)
+vou usar a estrategia de nesting de structs com casting; sera
+** [ ] remover flags desnecessárias de pulo... (usouse ia?)
