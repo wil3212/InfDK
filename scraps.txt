@@ -1,0 +1,26 @@
+ IsKeyDown(KEY_UP)) 
+ IsKeyDown(KEY_DOWN))
+ IsKeyDown(KEY_RIGHT)
+ IsKeyDown(KEY_LEFT))
+
+
+ 
+ IsKeyDown(KEY_W)) 
+ IsKeyDown(KEY_S))
+ IsKeyDown(KEY_D)
+ IsKeyDown(KEY_A))
+
+
+        calculaCantosInt(player1);
+        if (matrix[(player1->intPos[0]+1)*NCOL+player1->intPos[1]] == 'Z') player1->pos[0] = player1->intPos[0];
+        else if (matrix[(player1->intPos[2]+1)*NCOL+player1->intPos[3]] == 'Z') player1->pos[0] = player1->intPos[0];
+
+        else if (matrix[(player1->intPos[4]-1)*NCOL+player1->intPos[5]] == 'Z') player1->pos[0] = player1->intPos[4];
+        else if (matrix[(player1->intPos[6]-1)*NCOL+player1->intPos[7]] == 'Z') player1->pos[0] = player1->intPos[4];
+
+
+        if (matrix[(player1->intPos[0])*NCOL+player1->intPos[1]+1] == 'Z') player1->pos[1] = player1->intPos[1];
+        else if (matrix[(player1->intPos[4])*NCOL+player1->intPos[5]+1] == 'Z') player1->pos[1] = player1->intPos[1];
+
+        else if (matrix[(player1->intPos[2])*NCOL+player1->intPos[3]-1] == 'Z') player1->pos[1] = player1->intPos[3];
+        else if (matrix[(player1->intPos[6])*NCOL+player1->intPos[7]-1] == 'Z') player1->pos[1] = player1->intPos[3];
