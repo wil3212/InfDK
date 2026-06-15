@@ -9,12 +9,6 @@
 void menuDraw(int page, menuOptions* menu) {
   switch (page) {
     case 0: // Menu inicial
-      /*
-      //DrawText(const char *text, int posX, int posY, int fontSize, Color color);
-      DrawText(menu->options[0],250,250,20, BLUE);
-      DrawText(menu->options[1],250,300,20, BLUE);
-      DrawText(menu->options[2],250,350,20, BLUE);
-      */
       // Desenha o texto das 3 opções
       for (int i=0;i<NOPTIONS;i++)
         DrawText(menu->options[i],OPTEXTx,OPTEXTy+OPTEXTofset*i,20, BLUE);
@@ -28,8 +22,10 @@ void menuDraw(int page, menuOptions* menu) {
       //DrawText(const char *text, int posX, int posY, int fontSize, Color color);
       DrawText("Passou de fase!!!",250,250,20, BLUE);
       break;
+    case 2:
+      DrawText("Morreu!!!",250,250,20, BLUE);
+      break;
   }
-
 }
 
 void selecionaOpcMenu(menuOptions* menu,int *gameMode, bool *exit, char** matriz,entities* entidades,int *fase) {

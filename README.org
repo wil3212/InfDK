@@ -97,3 +97,51 @@ Todas entidades possuem velocidades verticais e horizontais, alem de aceleraçõ
 a. Quero fazer uma função generica (que funcione para mover qualquer entidade)
 vou usar a estrategia de nesting de structs com casting; sera
 ** [ ] remover flags desnecessárias de pulo... (usouse ia?)
+
+
+
+* HitBox colison check?!
+
+- [ ] Sobre a jogabilidade, resolver certos bugs tal como ficar preso se tentar pular e encostar na parede ao mesmo tempo
+
+** Bom, estrategia pra hitboxes.
+Por hora, vou assumir que as hitboxes são iguais as visuas: quadrados.
+- [X] Vou simplificar: um atributo "centro" sera calculado como sendo o centro de massa de cada entidade, a colisão será determinada baseada na distancia entre esses centros (hitbox circular) (Concluído: 2026-06-13 20:19:57)
+- [X] Next, should tackle (finally) stairs; (Concluído: 2026-06-15 05:48:51)
+- [ ] Later, different game states maybe, Like the hammer item that allow you to kill enemies if touch then.
+    Extratégias para tal:
+    1. Checkar por 'isClimbing' antes de aplicar qualquer move()
+    2. Caso "isCLimbing", só pode subir ou descer...
+    3. caso não "isClimbing", pode começar se em cima de um S...
+
+    * Progresso:
+    a. Na função colisionCheck, no caso teto, adicionei toda uma parte para lidar com o caso "isClimbing".
+    b. adição do novo caso no entity->moved, para cima e baixo climbing..
+
+
+- [X] Impedir de cair no void!!! (Concluído: 2026-06-15 06:35:22)
+
+#+begin_example
+0----------------->X
+|
+|
+|
+|                           -----------
+|                       ---/           \---
+v                     -/                   \-
+Y                   -/ +--------------------+\-
+                   /   |                    |  \
+                  /    |                    |   \
+                  |    |                    |   |
+                 /     |                    |    \
+                 |     |          C         |    |
+                 \     |                    |    /
+                  |    |                    |   |
+                  \    |                    |   /
+                   \   |                    |  /
+                    -\ +--------------------+/-
+                      -\                   /-
+                        ---\           /---
+                            -----------
+#+end_example
+

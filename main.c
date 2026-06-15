@@ -11,112 +11,16 @@
 #include "mapa.h"
 #include "render.h"
 #include "menu.h"
+#include <math.h>
+
 
 typedef struct {
   int score;
   int kills;
   int secrets;
+  int currentStage;
   char name[40];
 } player_score;
-
-void calculaCantosInt2(base* entity) {
-    entity->intPos[0] = (int) entity->pos[0];
-    entity->intPos[1] = (int) entity->pos[1];
-
-  // As próximas linhas calculam as posições inteiras dos cantos do jogador, considerando que o jogador ocupa um espaço de 2x2 blocos no mapa.
-    entity->intPos[2] = (int) entity->pos[0];
-    entity->intPos[3] = (int) (entity->pos[1] + 1);
-
-    entity->intPos[4] = (int) (entity->pos[0] + 1);
-    entity->intPos[5] = (int) entity->pos[1];
-
-    entity->intPos[6] = (int) (entity->pos[0] + 1);
-    entity->intPos[7] = (int) (entity->pos[1] + 1);
-}
-void colisionCheck(base *entity, int direction, char* matrix) {
-  switch (direction) {
-    case 0:
-      // Colisão com o Teto
-      if (entity->verticalV < 0) {
-          calculaCantosInt2(entity);
-          if (isSolid(matrix[entity->intPos[0] * NCOL + entity->intPos[1]]) ||
-              isSolid(matrix[entity->intPos[2] * NCOL + entity->intPos[3]])) {
-                entity->pos[0] = (float)(entity->intPos[0] + 1);
-                entity->verticalV = 0;
-          }
-      }
-      else
-        entity->moved[0] = 0;
-      break;
-    case 1: // A
-      int rowTop = (int)(entity->pos[0] + 0.1f);
-      int rowBottom = (int)(entity->pos[0] + 0.9f);
-      if (isSolid(matrix[rowTop * NCOL + (int)(entity->pos[1])]) ||
-          isSolid(matrix[rowBottom * NCOL + (int)(entity->pos[1])])) {
-          entity->pos[1] = (float)((int)(entity->pos[1]) + 1.0f);
-      }
-      entity->moved[1] = 0;
-      break;
-    case 2:
-      if (entity->verticalV >= 0) {
-          calculaCantosInt2(entity);
-          if (isSolid(matrix[entity->intPos[4] * NCOL + entity->intPos[5]]) ||
-              isSolid(matrix[entity->intPos[6] * NCOL + entity->intPos[7]])) {
-                entity->pos[0] = (float)entity->intPos[0];
-                entity->verticalV = 0;
-                entity->grounded = 1;
-                entity->jumpCount = 0;
-          }
-      }
-      entity->moved[2] = 0;
-      break;
-    case 3: // D
-      rowTop = (int)(entity->pos[0] + 0.1f);
-      rowBottom = (int)(entity->pos[0] + 0.9f);
-      if (isSolid(matrix[rowTop * NCOL + (int)(entity->pos[1] + 1.0f)]) ||
-          isSolid(matrix[rowBottom * NCOL + (int)(entity->pos[1] + 1.0f)])) {
-            entity->pos[1] = (float)((int)(entity->pos[1] + 1.0f) - 1.0f);
-      }
-      entity->moved[3] = 0;
-      break;
-  }
-}
-void colisionCheckMain(base *entity, char* matrix) {
-  for (int i=0;i<4;i++)
-    if (entity->moved[i])
-      colisionCheck(entity, i, matrix);
-}
-
-
-void move(base *entity, char mode) {
-  switch(mode) {
-    case 'A':
-      entity->pos[1] -= SPEED * entity->speedFactor;
-      entity->moved[1] = 1;
-      break;
-    case 'D':
-      entity->pos[1] += SPEED * entity->speedFactor;
-      entity->moved[3] = 1;
-      break;
-    case 'W':
-      // === 4. LÓGICA DE PULO (Melhorada) ===
-      if (entity->jumpCount == 0 && entity->grounded) {
-          entity->verticalV = JUMP_FORCE;
-          entity->jumpCount = 1;
-      }
-      else if (entity->jumpCount == 1) {
-          entity->verticalV = D_JUMP_FORCE;
-          entity->jumpCount = 2;
-      }
-      entity->moved[0] = 1;
-      break;
-    case 'S':
-      entity->verticalV += GRAVITY;
-      entity->pos[0] += entity->verticalV;
-      entity->moved[2] = 1;
-      break;
-  }
-}
 
 
 int main() {
@@ -142,6 +46,8 @@ int main() {
     InitWindow((NLIN - 1) * TAM, (NCOL - 1) * TAM, "Donkey Kong INF");
     // Define o FPS alvo para 60
     SetTargetFPS(60);
+
+    int counTimer = 0;
 
     bool exit = false;
     // Loop principal do jogo
@@ -174,18 +80,46 @@ int main() {
           if (IsKeyDown(KEY_A)) move((base*)entidades->player,'A');
 
 
-          if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W))
+          if (IsKeyPressed(KEY_SPACE))
             move((base*)entidades->player, 'W');
 
+          if (IsKeyDown(KEY_W))
+            move((base*)entidades->player, 'C');
+          if (IsKeyDown(KEY_S))
+            move((base*)entidades->player, 'c');
+
+          //printf("isCLimbing? %d\n",entidades->player->isClimbing);
+          //printf("bloco %c \n",matrix[entidades->player->intPos[0] * NCOL + entidades->player->intPos[1]]);
+          //printf("hor V: %.2f \n",entidades->player->horizontalV);
+          printf("pos X: %.2f \n",entidades->player->pos[1]);
+          printf("pos Y: %.2f \n",entidades->player->pos[0]);
+
           // gravity for all
-          for (int i=0;i<entidades->nFlames;i++)
-            move((base*)entidades->flames[i], 'S');
-          move((base*)entidades->player, 'S');
+         for (int i=0;i<entidades->nFlames;i++)
+            move((base*)entidades->flames[i], 'G');
+         move((base*)entidades->player, 'G');
 
-          for (int i=0;i<entidades->nFlames;i++)
+         for (int i=0;i<entidades->nFlames;i++)
             colisionCheckMain((base*)entidades->flames[i], matrix);
-        colisionCheckMain((base*)entidades->player, matrix);
+         colisionCheckMain((base*)entidades->player, matrix);
 
+
+         checkDeadList(entidades);                                      //    Previne seg fault por entidades ganhando
+         for (int i=0;i<entidades->nFlames;i++) {                       //    pos muito elevadas, quando caem do mapa.
+           if (!entidades->flames[i]->alive) {                          //
+             entidades->flames[i]->pos[0] = 400;                        //
+             entidades->flames[i]->pos[1] = 400;                        //
+             entidades->flames[i]->verticalV = 0.0;                     //
+             entidades->flames[i]->horizontalV = 0.0; //slippery ground?//
+           }
+         }
+         //printf("pos enem: %f %f \n",entidades->flames[4]->pos[0],entidades->flames[0]->pos[1]);
+
+         if (hitBoxCheckListl(entidades)) {
+           printf("morreu!!");
+           counTimer = 0;
+           gameMode = 2;
+         }
 
          // Checa se player está na porta
          if (matrix[(int)(entidades->player->pos[0])*NCOL+(int)(entidades->player->pos[1])] == 'F') {
@@ -203,6 +137,22 @@ int main() {
               // Desenha o mapa e o jogador
               drawMatrix(matrix, entidades);
               DrawFPS(400,400);
+          EndDrawing();
+          break;
+        case 2:
+          if (counTimer > 150) {
+            matrix = carregaMapa(faseAtual);
+            if (matrix == NULL) {
+                return 1;
+            }
+            entidades = getEntities(matrix);
+            gameMode = 1;
+          }
+          printf("counter: %d\n",counTimer);
+          counTimer ++;
+          BeginDrawing();
+              ClearBackground(BLACK);
+              menuDraw(2,menu);
           EndDrawing();
           break;
         case 3: // Tela de "Passou de fase!"

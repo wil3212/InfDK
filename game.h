@@ -10,9 +10,10 @@
 #define POS 20
 #define TAM 20
 
+#define CSPEED 0.15f
 #define SPEED 0.20f
 #define GRAVITY 0.02f
-#define JUMP_FORCE -0.45f
+#define JUMP_FORCE -0.01f
 #define D_JUMP_FORCE -0.40f
 
 #define maxFlames 20
@@ -20,12 +21,13 @@
 typedef struct player {
     float pos[2];
     int intPos[8];
-    int moved[4];
+    int moved[6];
     float speedFactor;  // +
     float verticalV;
     float horizontalV; //slippery ground?
     int grounded;
     int jumpCount;
+    bool alive;
     bool canJump;
     bool isClimbing;
 } mario;
@@ -33,25 +35,28 @@ typedef struct player {
 typedef struct enemy {
     float pos[2];
     int intPos[8];
-    int moved[4];
+    int moved[6];
     float speedFactor;  // +
     float verticalV;
     float horizontalV; //slippery ground?
     int grounded;
     int jumpCount;
     bool alive;
+    bool isClimbing;
     int isRight; // 0 -> esquerda 1 -> direita
 } flame;
 
 typedef struct { //common to any kind of entity
     float pos[2];
     int intPos[8];
-    int moved[4]; // +
+    int moved[6]; // +
     float speedFactor;  // +
     float verticalV;
     float horizontalV; //slippery ground?
     int grounded;
     int jumpCount;
+    bool alive;
+    bool isClimbing;
 } base;
 
 typedef struct entities {
@@ -74,7 +79,21 @@ void drawMatrix(char* matrix, const mario player);
 */
 
 // game.c
+
+void checkDead(base* entity);
+void checkDeadList(entities *entidades);
+
+int hitBoxCheck(base* entity1, base* entity2);
+int hitBoxCheckListl(entities *entidades);
+
 void calculaCantosInt(mario* player);              // ok
+void calculaCantosInt2(base* entity);
+
+void colisionCheck(base *entity, int direction, char* matrix);
+void colisionCheckMain(base *entity, char* matrix);
+
+void move(base *entity, char mode);
+
 bool isSolid(char block);
 
 void getPoss(char* matriz, mario* player);  // le a char matrix e a partir dai, passa a posição do P para o player
