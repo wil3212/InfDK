@@ -13,7 +13,7 @@
 #define CSPEED 0.15f
 #define SPEED 0.20f
 #define GRAVITY 0.02f
-#define JUMP_FORCE -0.01f
+#define JUMP_FORCE -0.38f
 #define D_JUMP_FORCE -0.40f
 
 #define maxFlames 20

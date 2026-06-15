@@ -86,6 +86,7 @@ void move(base *entity, char mode) {
             entity->verticalV = JUMP_FORCE;
             entity->jumpCount = 1;
             entity->grounded = 0;
+            //printf("jumpppp");
         }
         else if (entity->jumpCount == 1) {
             entity->verticalV = D_JUMP_FORCE;
@@ -113,8 +114,10 @@ void move(base *entity, char mode) {
       entity->verticalV += GRAVITY;
       if (entity->verticalV != 0 && entity->grounded == 0) {
         entity->pos[1] += SPEED * entity->horizontalV * entity->speedFactor;
-      entity->moved[1] = 1;
-      entity->moved[3] = 1;
+        if (entity->horizontalV < 0)
+          entity->moved[1] = 1;
+        if (entity->horizontalV > 0)
+          entity->moved[3] = 1;
       }
       entity->pos[0] += entity->verticalV;
   //  if (entity->grounded == 1)

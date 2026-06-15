@@ -91,8 +91,10 @@ int main() {
           //printf("isCLimbing? %d\n",entidades->player->isClimbing);
           //printf("bloco %c \n",matrix[entidades->player->intPos[0] * NCOL + entidades->player->intPos[1]]);
           //printf("hor V: %.2f \n",entidades->player->horizontalV);
-          printf("pos X: %.2f \n",entidades->player->pos[1]);
-          printf("pos Y: %.2f \n",entidades->player->pos[0]);
+        //printf("pos X: %.2f \n",entidades->player->pos[1]);
+        //printf("pos Y: %.2f \n",entidades->player->pos[0]);
+        system("clear");
+          printf("0: %d\n1: %d\n2: %d\n3: %d\n4: %d\n5: %d\n",entidades->player->moved[0],entidades->player->moved[1],entidades->player->moved[2],entidades->player->moved[3],entidades->player->moved[4],entidades->player->moved[5]);
 
           // gravity for all
          for (int i=0;i<entidades->nFlames;i++)
