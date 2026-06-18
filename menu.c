@@ -6,7 +6,7 @@
 #include "mapa.h"
 #include <stdio.h>
 
-void menuDraw(int page, menuOptions* menu) {
+void menuDraw(int page, menuOptions* menu, stats *status) {
   switch (page) {
     case 0: // Menu inicial
       // Desenha o texto das 3 opções
@@ -15,20 +15,33 @@ void menuDraw(int page, menuOptions* menu) {
 
       // Desenha o retangulo vermelho (seleção da opção)
       //void DrawRectangleLines(int posX, int posY, int width, int height, Color color);
-      DrawRectangleLines(OPTEXTx-5, OPTEXTy+OPTEXTofset*(menu->selectedOption)-5,OPTEXTW+20,OPTEXTH-15, RED);
-
+        DrawRectangleLines(OPTEXTx-5, OPTEXTy+OPTEXTofset*(menu->selectedOption)-5,OPTEXTW+20,OPTEXTH-15, RED);
       break;
     case 1: // Passou de fase
       //DrawText(const char *text, int posX, int posY, int fontSize, Color color);
       DrawText("Passou de fase!!!",250,250,20, BLUE);
+      DrawText(TextFormat("Pontuação: %d",status->score),250,350,20, RED);
+      DrawText(TextFormat("Vidas: %d",status->lives),250,150,20, PURPLE);
       break;
     case 2:
       DrawText("Morreu!!!",250,250,20, BLUE);
+      DrawText(TextFormat("Pontuação: %d",status->score),250,350,20, RED);
+      DrawText(TextFormat("Vidas: %d",status->lives),250,150,20, PURPLE);
+      break;
+    case 3:
+      DrawText("Game Over!!!",250,50,20, BLUE);
+      DrawText(TextFormat("Pontuação: %d",status->score),250,150,20, RED);
+      DrawText(TextFormat("Vidas: %d",status->lives),250,100,20, PURPLE);
+      for (int i=0;i<NOPTIONS;i++)
+        DrawText(menu->options[i],OPTEXTx,OPTEXTy+OPTEXTofset*i,20, BLUE);
+      // Desenha o retangulo vermelho (seleção da opção)
+      //void DrawRectangleLines(int posX, int posY, int width, int height, Color color);
+        DrawRectangleLines(OPTEXTx-5, OPTEXTy+OPTEXTofset*(menu->selectedOption)-5,OPTEXTW+20,OPTEXTH-15, RED);
       break;
   }
 }
 
-void selecionaOpcMenu(menuOptions* menu,int *gameMode, bool *exit, char** matriz,entities* entidades,int *fase) {
+void selecionaOpcMenu(menuOptions* menu,int *gameMode, bool *exit, char** matriz,entities* entidades,int *fase,stats *status) {
   switch (menu->selectedOption) {
     case 0:
       *fase = 1;
@@ -36,6 +49,8 @@ void selecionaOpcMenu(menuOptions* menu,int *gameMode, bool *exit, char** matriz
       printf("dentro do menu %d\n",*fase);
       *entidades = *getEntities(*matriz);
       *gameMode = 1;
+      status->score = 0;
+      status->lives = 3;
       break;
     case 2:
       *exit = true;

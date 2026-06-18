@@ -16,7 +16,14 @@
 #define JUMP_FORCE -0.38f
 #define D_JUMP_FORCE -0.40f
 
-#define maxFlames 20
+#define maxFlames 50
+
+#define ladderOffSet 1.0
+typedef struct {
+  int score;
+  int lives;
+} stats;
+
 // A estrutura mario representa o jogador no jogo, armazenando sua posição atual em coordenadas de ponto flutuante (pos)
 typedef struct player {
     float pos[2];
@@ -30,33 +37,37 @@ typedef struct player {
     bool alive;
     bool canJump;
     bool isClimbing;
+ // int score;
+ // int lives;
 } mario;
 
 typedef struct enemy {
-    float pos[2];
-    int intPos[8];
-    int moved[6];
-    float speedFactor;  // +
-    float verticalV;
-    float horizontalV; //slippery ground?
-    int grounded;
-    int jumpCount;
-    bool alive;
-    bool isClimbing;
-    int isRight; // 0 -> esquerda 1 -> direita
+  float pos[2];
+  int intPos[8];
+  int moved[6];
+  float speedFactor;  // +
+  float verticalV;
+  float horizontalV; //slippery ground?
+  int grounded;
+  int jumpCount;
+  bool alive;
+  bool isClimbing;
+  int isRight; // 0 -> esquerda 1 -> direita
+  int clock;
+  int clockLimit;
 } flame;
 
 typedef struct { //common to any kind of entity
-    float pos[2];
-    int intPos[8];
-    int moved[6]; // +
-    float speedFactor;  // +
-    float verticalV;
-    float horizontalV; //slippery ground?
-    int grounded;
-    int jumpCount;
-    bool alive;
-    bool isClimbing;
+  float pos[2];
+  int intPos[8];
+  int moved[6]; // +
+  float speedFactor;  // +
+  float verticalV;
+  float horizontalV; //slippery ground?
+  int grounded;
+  int jumpCount;
+  bool alive;
+  bool isClimbing;
 } base;
 
 typedef struct entities {
@@ -65,20 +76,10 @@ typedef struct entities {
   int nFlames;
 } entities;
 
-/*
-// Optei por comentar todos esses protótipos repetidos
-// Declaração das funções utilizadas no jogo, incluindo funções para manipulação do mapa, renderização e lógica do jogador.
-// MAPA
-char* alocaMatriz(void);
-char* carregaMapa(mario* player, int fase);
-void printaMatriz(char* matrix);
-void printaMatriz2(char* matrix, const mario player);
-bool isSolid(char block);
-//Render
-void drawMatrix(char* matrix, const mario player);
-*/
-
-// game.c
+void bichoIA(entities *entity,char *matrix);
+void flameIA(flame *f, char* matrix);
+char qBloco(base entity, char* matrix);   // retorna o char sob o qual o bloco esta em cima (D ou S); Retorna 'O' caso contrario
+int rInt(int min,int max);
 
 void checkDead(base* entity);
 void checkDeadList(entities *entidades);

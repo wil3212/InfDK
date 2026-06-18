@@ -7,24 +7,24 @@ ZHZZZZZZZZZZZZZZZZZZZZZHZ
 HH                            
 SDDS              E
 ZZZZZZZZHZZZZZZZZHZZZZZZZZZ   
-HH              E
-DSS D           E
-ZZHZZZZZZZZZZZZ E ZZZH
-HH              E
-SDDS                          
+HH              E  E
+DSS D           E  E  D
+ZZHZZZZZZZZZZZZ E  EZZHZZ
+HH       Z      E  E  H   Z
+SDDS     Z        Z   S   Z   
 ZZZZZZHZZZZZZZZZZZZZZHZZZZZZ  
-                              
+        EEEEEEEEEEE           
 D       EEEEEEEEEEE
 HZZZZZZZZZZZZZZZZZZZZZZZZZZ   
-H                             
-                              
+H      P                      
+S     P                       
     ZZZZZZZZZZZZZZ            
                               
                    F      D
    ZZZZZZZZZZZZZZZZZZZZZZZHZZZ
                           H   
-      P                   S
+                          H
+                          H   
+                          H   
+                          S   
 ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
-                              
-                              
-                              

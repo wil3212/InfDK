@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
-/** A função calculaCantosInt é responsável por calcular as posições inteiras dos cantos do jogador com base em sua posição atual. 
+/** A função calculaCantosInt é responsável por calcular as posições inteiras dos cantos do jogador com base em sua posição atual.
  *  Ela armazena essas posições em um array intPos dentro da estrutura mario, que pode ser usado para verificar colisões ou interações com o ambiente do jogo.
  */
 
@@ -210,20 +210,33 @@ void colisionCheck(base *entity, int direction, char* matrix) {
       break;
     case 4:
         calculaCantosInt2(entity);
-        if ((matrix[entity->intPos[2] * NCOL + entity->intPos[1]]) == 'S') {
+        char chur = qBloco(*(base*)entity,matrix);
+        if (chur == 'S')
           entity->isClimbing = 1;
-          }
-        if ((matrix[entity->intPos[2] * NCOL + entity->intPos[1]]) == 'D') {
+        else if (chur == 'D') {
           entity->isClimbing = 0;
-          }
+          entity->verticalV = 0;
+    //      entity->grounded = 1;
+          entity->pos[0] = (float)entity->intPos[0];
+        }
+    //  else
+    //    entity->isClimbing = 0;
+
         entity->moved[4] = 0;
-      break;
+        break;
     case 5:
         calculaCantosInt2(entity);
-        if ((matrix[entity->intPos[2] * NCOL + entity->intPos[1]]) == 'S')
-          entity->isClimbing = 0;
-        if ((matrix[entity->intPos[2] * NCOL + entity->intPos[1]]) == 'D')
+        chur = qBloco(*(base*)entity,matrix);
+        if (chur == 'D')
           entity->isClimbing = 1;
+        else if (chur == 'S') {
+          entity->isClimbing = 0;
+          entity->verticalV = 0;
+          entity->grounded = 1;
+          entity->pos[0] = (float)entity->intPos[0];
+        }
+    //  else
+    //    entity->isClimbing = 0;
         entity->moved[5] = 0;
       break;
   }
@@ -250,6 +263,8 @@ mario* initPlayer() {
     tmp->moved[i] = 0;
   tmp->grounded = 1;
   tmp->alive = 1;
+//tmp->score = 0;
+//tmp->lives = 3;
   return tmp;
 }
 
@@ -269,6 +284,8 @@ flame* initFlame() {
   tmp->isRight = 0; 
   tmp->alive = 1;
   tmp->isClimbing = 0;
+  tmp->clock = 0;
+  tmp->clockLimit = 0;
   return tmp;
 }
 
@@ -308,4 +325,95 @@ entities* getEntities(char* matriz) {
     }
   }
   return lista;
+}
+
+
+int rInt(int min,int max) {
+  return (rand() % (max - min + 1)) + min;
+}
+char qBloco(base entity, char* matrix) {   // retorna o char sob o qual o bloco esta em cima (D ou S); Retorna 'O' caso contrario
+// get center of player hitbox, and center of matrix square it is in, then, the distance between teh two centers
+  char retorno = 'O';
+  float p[2];
+  float block[2];
+  p[0] = entity.pos[0] + 0.5;
+  p[1] = entity.pos[1] + 0.5;
+  char ch = matrix[(int)(p[0])*NCOL+(int)(p[1])];
+  if (ch == 'S' || ch == 'D') {
+    block[0] = (int)p[0] + 0.5;
+    block[1] = (int)p[1] + 0.5;
+    float dist = sqrtf(powf(p[0]-block[0],2)+powf(p[1]-block[1],2));
+    if (dist < ladderOffSet)
+      retorno = ch;
+  }
+  return retorno;
+}
+
+void flameIA(flame *f, char* matrix) {
+  // direction flipping logic
+  f->clock ++;
+  if (f->clock > f->clockLimit) {
+    f->clock = 0;
+    f->clockLimit = 50 + rInt(0,100);
+    switch (rInt(0,1)) {
+      case 0:
+        break;
+      case 1:
+        f->isRight = !f->isRight; //this will work for climbing as well
+        break;
+    }
+  }
+  // moving part
+
+  if (f->isClimbing == 0) {
+    if (f->clock < 35) {
+      switch (qBloco(*(base*)(f),matrix)) {
+        case 'D': // Ladder end
+          move((base*)f, 'c'); // C é climb up e 'c' é climb down
+          f->clock = 0;
+          f->isRight = 0;
+          break;
+        case 'S': // S é ladder Start
+          move((base*)f, 'C'); // C é climb up e 'c' é climb down
+          f->clock = 0;
+          f->isRight = 1;
+          break;
+        case 'O':
+          if (f->isRight)
+            move((base*)f, 'D');
+          else
+            move((base*)f, 'A');
+          break;
+      }
+    }
+    else {
+      if (f->isRight)
+        move((base*)f, 'D');
+      else
+        move((base*)f, 'A');
+    }
+  }
+  else {
+ // if (f->clock % 3) {
+ //   switch (qBloco(*(base*)(f),matrix)) {
+ //     case 'D': // Ladder end
+ //       move((base*)f, 'C'); // C é climb up e 'c' é climb down
+ //       break;
+ //     case 'S': // S é ladder Start
+ //       move((base*)f, 'c'); // C é climb up e 'c' é climb down
+ //       break;
+ //   }
+ // }
+    //else {
+      if (f->isRight)
+        move((base*)f, 'C');
+      else
+        move((base*)f, 'c');
+   // }
+  }
+}
+
+void bichoIA(entities *entity,char *matrix) {
+  for (int i=0;i<entity->nFlames;i++)
+    flameIA(entity->flames[i],matrix);
 }

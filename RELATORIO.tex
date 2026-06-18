@@ -1,0 +1,128 @@
+% Created 2026-06-17 Wed 20:21
+% Intended LaTeX compiler: xelatex
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{fontspec}
+\setmainfont{DejaVu Serif}
+\setmonofont{DejaVu Sans Mono}
+\date{\today}
+\title{Relatorio}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={Relatorio},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={},
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Sobre a organização dos arquivos:}
+\label{sec:orge214bbb}
+
+
+Os principais arquivos são esses:
+A estratégia foi agrupar atividades semelhantes em cada arquivo.
+Cada header file (.h) incluí o protótipo das funções declaradas no respectivo source file (.c)
+
+\begin{verbatim}
+tree | grep -e '.c' -e '.h'
+\end{verbatim}
+
+\begin{center}
+\begin{tabular}{l l p{10cm}}
+├── & game.c & Definição das estruturas e funções que representam inimigos, jogador, sua movimentação, seus status\\
+├── & game.h & \\
+├── & main.c & Arquivo principal, onde se definem as variáveis e estruturas além do game-loop\\
+├── & mapa.c & Trata do vetor de char que representa a posição inicial de todos elementos do mapa, a partir dos arquivos mapaX.txt\\
+├── & mapa.h & \\
+├── & menu.c & Trata dos diferentes menus e suas funcionalidades, incluindo suas opções e aparência.\\
+├── & menu.h & \\
+├── & placar.bin & Guarda os 10 melhores scores\\
+├── & render.c & Lida com a renderização do mapa e todas entidades.\\
+└── & render.h & \\
+\end{tabular}
+\end{center}
+\section{Funcionamento}
+\label{sec:org7b05ec6}
+\subsection{Estruturas}
+\label{sec:org35d263e}
+De um modo geral, foram definidas estruturas que representam inimigos (flames), o jogador (player) além de um tipo base (base);
+Essas estruturas contém atributos basicos como posição, velocidade além de flags como ``está vivo?'', ``está pindurado?'';
+Essas estruturas são utilizadas majoritariamente na implementação da jogabilidade do game-loop, isto é, são utilizadas na renderização das entidades (inimigos e jogador) no mapa durante o jogo, bem como sua movimentação, interações entre si (colisão entre entidades, por exemplo, matar o player caso toque em um inimigo) e entre o mapa (Logica que previne entidades de penetrar as plataformas).
+Além dessas (que são as principais), foram utilizadas extruturas auxiliares: ``entities'' que funciona como vetor contendo todas entidades ativas, e a estrutura ``base'';
+Essa ultima contem todos os campos que são comuns a jogadores e inimigos (principalmente referentes a posição e locomoção):
+Todos os campos comuns a essas tres (inimigos, jogador e base) são declarados na mesma ordem e no inicio de cada tipo;
+Isso permite que criemos funções mais genericas, que recebam de parametro tanto inimigos ou jogadores, utilizando um cast para esse tipo base.
+\begin{itemize}
+\item Por exemplo, temos a função
+void calculaCantosInt2(base* entity);
+\end{itemize}
+podemos chama-la para atualizar os cantos (que são campos dos jogadores e inimigos) de entidades:
+\begin{verbatim}
+        calculaCantosInt2((base*)jogador);
+            ou
+        calculaCantosInt2((base*)inimigo);
+\end{verbatim}
+\subsection{Game-loop}
+\label{sec:org451bb2a}
+Dentro de main.c, o game-loop se divide em algumas subpartes, cada uma sendo um 'case' em um switch case principal:
+\subsubsection{São 5 casos:}
+\label{sec:org168b5c0}
+\begin{enumerate}
+\item 'case 0' define a representação e funcionalidade do menu inicial;
+\item 'case 1' define a principal parte do loop, que trata do 'jogo rodando';
+É aqui que o jogador pode se locomover, saltar, ser morto pelos inimigos\ldots{}
+\item 'case 2' faz funcionar a tela ``você morreu'', quando o jogador, more\ldots{}
+\item 'case 3' a tela de transição quando o jogador passa de fase
+\item 'case 4' a tela de Pause;
+\end{enumerate}
+
+\begin{itemize}
+\item Obs: os 'case's 0 e 4 apresentam menus interativos, enquanto 2 e 3 apenas mostram mensagens;
+\item A cada game-loop, uma flag chamada 'gameMode' decide qual dos switch cases será executado, sendo ela alterada apropriadamente em cada situação.
+\end{itemize}
+\subsection{Um pouco mais de perto (cases)}
+\label{sec:org711d7ab}
+\subsubsection{Renderização}
+\label{sec:orgf33c3e6}
+De uma forma bem geral, em cada um dos casos, a ultima coisa a ser feita é a renderização, que ocorre no escopo de ``Drawing()'';
+Invariavelmente, isso segue a lógica de primeiramente, tornar tudo preto (ClearBackground(BLACK);) e depois se desenha o que deve ser visto; Isso se repete todo frame (60 vezes por segundo)
+Ex:
+\begin{verbatim}
+          BeginDrawing();
+              ClearBackground(BLACK);
+              menuDraw(1,menu,ptrStatus);
+          EndDrawing();
+\end{verbatim}
+Isso é verdade em todos os casos; Uma função decide o que será desenhado, (no caso acima ``menuDraw(1,menu,ptrStatus);'')
+\begin{itemize}
+\item \textbf{Tangente, render.c}
+\end{itemize}
+Apesar do esforço para separar o código em arquivos de semelhantes funcionalidades, render.c acaba lidando apenas com uma função (e bem simples), responsável pela renderização no caso 'case 1' de jogo; No entanto, o restante das funções de renderização ficam localizadas no menu.c.
+\subsubsection{O principal (case 1)}
+\label{sec:orgdc368d9}
+Esse é de longe o caso mais complexo.
+Ele pode ser subdividido em trechos:
+\begin{enumerate}
+\item 'ouvir' por inputs / mover entidades
+De um modo geral, nessa parte inicial, são registrados inputs via teclado, tanto sobre movimentação quanto para pausar o jogo.
+No primeiro caso, geralmente, atualiza-se o struct do jogador apropriadamente (ex. sua posição horizontal é acrescida caso o jogador aperte 'D'). Outras atualizações acometem todas entidades nesse estado, como a gravidade que altera os campos de velocidade vertical de todas entidades presentes, além da IA dos inimigos, que altera a posição dos inimigos\ldots{}
+No segundo caso, caso o jogador aperte 'P', a flag gameMode é alterada, de modo que no frame seguinte o estado do jogo passa para o switch case apropriado.
+\item calcular colisões e checar outros eventos
+Em geral, isso se dá checando se a entidade em questão ``invadiu'' os limites de um bloco sólido (as plataformas por exemplo), teleportando tal entidade de volta; Como a logica detecta essa invasão antes de renderizar (além do fato de serem 60 FPS), ocorre a ilusão de que o mapa é sólido;
+Outro caso semelhante é o das escadas, em que detecta-se a proximidade da entidade com o inicio ou fim das escadas, ou do jogador com o Fim da fase.
+\item Renderizar
+\end{enumerate}
+\end{document}

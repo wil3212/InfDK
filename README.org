@@ -110,14 +110,27 @@ Por hora, vou assumir que as hitboxes são iguais as visuas: quadrados.
 - [X] Next, should tackle (finally) stairs; (Concluído: 2026-06-15 05:48:51)
 - [ ] Later, different game states maybe, Like the hammer item that allow you to kill enemies if touch then.
     Extratégias para tal:
-    1. Checkar por 'isClimbing' antes de aplicar qualquer move()
-    2. Caso "isCLimbing", só pode subir ou descer...
-    3. caso não "isClimbing", pode começar se em cima de um S...
+  1. Checkar por 'isClimbing' antes de aplicar qualquer move()
+  2. Caso "isCLimbing", só pode subir ou descer...
+  3. caso não "isClimbing", pode começar se em cima de um S...
 
-    * Progresso:
-    a. Na função colisionCheck, no caso teto, adicionei toda uma parte para lidar com o caso "isClimbing".
-    b. adição do novo caso no entity->moved, para cima e baixo climbing..
+  4. Progresso:
+  5. Na função colisionCheck, no caso teto, adicionei toda uma parte para lidar com o caso "isClimbing".
+  6. adição do novo caso no entity->moved, para cima e baixo climbing..
+- [ ] Melhorar as colisões da escada
+- [ ] Começar a lidar com scores
+  Ta, precisa guardar no arquivo bin 10 daqueles structs (que devem ser sempre ordenados)
+  Então, antes de mais nada, checa se o arquivo existe, caso não exista, cria em modo escrita, caso contrário, apenas lê.
+  'wr' parece ser uma boa por lidar com todos casos, mas há o cenário em que não é necessário alterar nada.
+-  Vou considerar o campo 'time' do struct como se referindo ao score na verdade
+Seguira uma logica bem similar aquela do jogo original, onde se ganha pontos por matar inimigos (ou saltar sob eles), ou passar de fase (com um bonus por tempo);
+- > Resetar o current time quando dar gameOver
+- [ ] Implementar um "GameOver" screen
+- [ ] Utilizar a nova e melhorada função qBloco()
 
+* Tracking dos mallocs:
+1. array de placares
+2. entidades
 
 - [X] Impedir de cair no void!!! (Concluído: 2026-06-15 06:35:22)
 
