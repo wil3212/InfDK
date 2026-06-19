@@ -2,6 +2,7 @@
 #define MENU_H
 #include <stdbool.h>
 #include "game.h"
+#include "placar.h"
 
 #define NOPTIONS 3
 #define OPTEXTH 50

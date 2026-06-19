@@ -5,6 +5,8 @@
 #include "game.h"
 #include "mapa.h"
 #include <stdio.h>
+#include "placar.h"
+
 
 void menuDraw(int page, menuOptions* menu, stats *status) {
   switch (page) {
@@ -46,11 +48,14 @@ void selecionaOpcMenu(menuOptions* menu,int *gameMode, bool *exit, char** matriz
     case 0:
       *fase = 1;
       *matriz = carregaMapa(*fase);
-      printf("dentro do menu %d\n",*fase);
+      //printf("dentro do menu %d\n",*fase);
       *entidades = *getEntities(*matriz);
       *gameMode = 1;
       status->score = 0;
       status->lives = 3;
+      break;
+    case 1:
+      printPlacar(readPlacar()); // testes ***
       break;
     case 2:
       *exit = true;

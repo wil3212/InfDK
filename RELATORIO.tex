@@ -1,4 +1,4 @@
-% Created 2026-06-17 Wed 20:21
+% Created 2026-06-17 Wed 23:53
 % Intended LaTeX compiler: xelatex
 \documentclass[11pt]{article}
 
@@ -29,7 +29,7 @@
 \tableofcontents
 
 \section{Sobre a organização dos arquivos:}
-\label{sec:orge214bbb}
+\label{sec:orgc13b5e0}
 
 
 Os principais arquivos são esses:
@@ -55,9 +55,9 @@ tree | grep -e '.c' -e '.h'
 \end{tabular}
 \end{center}
 \section{Funcionamento}
-\label{sec:org7b05ec6}
+\label{sec:org3c737ed}
 \subsection{Estruturas}
-\label{sec:org35d263e}
+\label{sec:org3ca45d1}
 De um modo geral, foram definidas estruturas que representam inimigos (flames), o jogador (player) além de um tipo base (base);
 Essas estruturas contém atributos basicos como posição, velocidade além de flags como ``está vivo?'', ``está pindurado?'';
 Essas estruturas são utilizadas majoritariamente na implementação da jogabilidade do game-loop, isto é, são utilizadas na renderização das entidades (inimigos e jogador) no mapa durante o jogo, bem como sua movimentação, interações entre si (colisão entre entidades, por exemplo, matar o player caso toque em um inimigo) e entre o mapa (Logica que previne entidades de penetrar as plataformas).
@@ -76,10 +76,10 @@ podemos chama-la para atualizar os cantos (que são campos dos jogadores e inimi
         calculaCantosInt2((base*)inimigo);
 \end{verbatim}
 \subsection{Game-loop}
-\label{sec:org451bb2a}
+\label{sec:orga5620a3}
 Dentro de main.c, o game-loop se divide em algumas subpartes, cada uma sendo um 'case' em um switch case principal:
 \subsubsection{São 5 casos:}
-\label{sec:org168b5c0}
+\label{sec:org91ff660}
 \begin{enumerate}
 \item 'case 0' define a representação e funcionalidade do menu inicial;
 \item 'case 1' define a principal parte do loop, que trata do 'jogo rodando';
@@ -94,9 +94,9 @@ Dentro de main.c, o game-loop se divide em algumas subpartes, cada uma sendo um 
 \item A cada game-loop, uma flag chamada 'gameMode' decide qual dos switch cases será executado, sendo ela alterada apropriadamente em cada situação.
 \end{itemize}
 \subsection{Um pouco mais de perto (cases)}
-\label{sec:org711d7ab}
+\label{sec:org6410a70}
 \subsubsection{Renderização}
-\label{sec:orgf33c3e6}
+\label{sec:org0505d4e}
 De uma forma bem geral, em cada um dos casos, a ultima coisa a ser feita é a renderização, que ocorre no escopo de ``Drawing()'';
 Invariavelmente, isso segue a lógica de primeiramente, tornar tudo preto (ClearBackground(BLACK);) e depois se desenha o que deve ser visto; Isso se repete todo frame (60 vezes por segundo)
 Ex:
@@ -112,7 +112,7 @@ Isso é verdade em todos os casos; Uma função decide o que será desenhado, (n
 \end{itemize}
 Apesar do esforço para separar o código em arquivos de semelhantes funcionalidades, render.c acaba lidando apenas com uma função (e bem simples), responsável pela renderização no caso 'case 1' de jogo; No entanto, o restante das funções de renderização ficam localizadas no menu.c.
 \subsubsection{O principal (case 1)}
-\label{sec:orgdc368d9}
+\label{sec:org2acdec3}
 Esse é de longe o caso mais complexo.
 Ele pode ser subdividido em trechos:
 \begin{enumerate}
@@ -125,4 +125,43 @@ Em geral, isso se dá checando se a entidade em questão ``invadiu'' os limites 
 Outro caso semelhante é o das escadas, em que detecta-se a proximidade da entidade com o inicio ou fim das escadas, ou do jogador com o Fim da fase.
 \item Renderizar
 \end{enumerate}
+\section{Sobre como usar:}
+\label{sec:org47b97fe}
+\subsection{Utilizando bash:}
+\label{sec:org4b1c8e3}
+\begin{enumerate}
+\item Clonando o repositório github:
+\begin{verbatim}
+cd
+git clone https://github.com/wil3212/InfDK.git
+cd InfDk
+\end{verbatim}
+
+\item Uma vez dentro do diretório basta rodar o arquivo ``jogo'':
+\end{enumerate}
+\begin{verbatim}
+./jogo
+\end{verbatim}
+
+\begin{enumerate}
+\item Para copilar e rodar:
+mas requer que raylib esteja instalada
+\end{enumerate}
+\begin{verbatim}
+make -k && ./jogo
+\end{verbatim}
+
+\textbf{Obs:}
+\begin{itemize}
+\item É importante que o terminal siga aberto para que o jogo funcione, fechar o terminal causará o fim do jogo.
+\item Atualmente, ainda não foi implementada a visualização do placar dentro da GUI do jogo (na opção 'Ranking'), no entanto, ao encerrar uma jogada (quando acabam-se as vidas), o jogador deve informar seu nome no terminal e apertar enter (o nome deve ter até 20 caracteres), ficando salvo a posição do jogador no ranking;
+\item A opção 'Ranking' printa os valores no terminal;
+\end{itemize}
+\subsection{Jogabilidade:}
+\label{sec:org71391a8}
+\begin{itemize}
+\item Navega pelos menus com 'W' e 'D', selecionando a opção com Enter ou Espaço;
+\item Em jogo: Anda para esquerda e direita com 'A'e 'D', pula com Espaço, sobe e desce escadas com 'W' e 'S'
+\item Pausa o jogo com TAB ou 'P', despausa precionando novamente ou selecionando a opção no menu
+\end{itemize}
 \end{document}

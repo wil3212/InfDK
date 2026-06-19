@@ -13,96 +13,10 @@
 #include "menu.h"
 #include <math.h>
 #include <time.h>
+#include "placar.h"
 
 
 
-// ----------------------------------------------------------
-#define maxScoreEntries 10
-#define placarArq "placar.bin"
-
-typedef struct {
-char nome[20];
-int time;
-} tipo_placar;
-
-void printPlacar(tipo_placar* placarVec) {
-    for (int i=0;i<maxScoreEntries;i++) {
-      printf("---------\n");
-      printf("%d\n",i);
-      printf("%s\n",placarVec[i].nome);
-      printf("%d\n",placarVec[i].time);
-      printf("\n");
-    }
-}
-void criaPlacar() {
-  FILE *scoreBin = fopen(placarArq,"wb");
-  if (scoreBin == NULL)
-    printf("Falha ao abrir placar.bin\n");
-  else {
-    tipo_placar tmp = {"\0", 0};
-    for (int i=0;i<maxScoreEntries;i++) {
-      if(1 == fwrite(&tmp,sizeof(tipo_placar),1,scoreBin)) printf("escreveu %d com sucesso\n",i);
-      else printf("erro ao escrever no arquivo\n");
-    }
-    fclose(scoreBin);
-  }
-}
-void atualizaPlacar(tipo_placar* novoPlacar) {
-  FILE *scoreBin = fopen(placarArq,"wb");
-  if (scoreBin == NULL)
-    printf("Falha ao abrir placar.bin\n");
-  else {
-      if(maxScoreEntries == fwrite(novoPlacar,sizeof(tipo_placar),maxScoreEntries,scoreBin)) printf("escreveu  com sucesso\n");
-      else printf("erro ao escrever no dddddarquivo\n");
-    fclose(scoreBin);
-  }
-}
-tipo_placar* readPlacar() {
-  tipo_placar *retorno = (tipo_placar*) malloc(sizeof(tipo_placar) * maxScoreEntries);
-  retorno[0].time = 0; // sinalizando lista vazia
-  FILE *scoreBin = fopen(placarArq,"rb");
-  if (scoreBin == NULL) {
-    printf("Falha ao ler placar.bin\n");
-    criaPlacar();
-  }
-  else {
-    for (int i=0;i<maxScoreEntries;i++)
-      fread(&retorno[i],sizeof(tipo_placar),1,scoreBin);
-    fclose(scoreBin);
-  }
-  return retorno;
-}
-int novoScore(int newScore) {
-  int retorno;
-  tipo_placar *velho = readPlacar();
-  tipo_placar *novoPlacar = (tipo_placar*) malloc(sizeof(tipo_placar) * maxScoreEntries);
-  int i=0;
-  tipo_placar *tmp = &velho[i];
-  while (velho[i].time > newScore) {
-    novoPlacar[i] = velho[i];
-    i++;
-  }
-  if (i<maxScoreEntries) {
-    retorno = i;
-    printf("informe seu nome\n");
-    fgets(novoPlacar[i].nome,20,stdin);
-    novoPlacar[i].time = newScore;
-    i++;
-    while (i<maxScoreEntries) {
-      novoPlacar[i] = tmp[i];
-      i++;
-    }
-  }
-  printf("Seu score esta na %d° colocação\n",retorno+1);
-  printPlacar(novoPlacar);
-  atualizaPlacar(novoPlacar);
-  free(velho);
-  free(novoPlacar);
-  return retorno;
-}
-
-
-// ----------------------------------------------------------
 
 
 int main() {
@@ -191,11 +105,11 @@ int main() {
           //printf("isCLimbing? %d\n",entidades->player->isClimbing);
           //printf("bloco %c \n",matrix[entidades->player->intPos[0] * NCOL + entidades->player->intPos[1]]);
           //printf("hor V: %.2f \n",entidades->player->horizontalV);
-        printf("pos X: %.2f \n",entidades->player->pos[1]);
-        printf("pos Y: %.2f \n",entidades->player->pos[0]);
-        system("clear");
-         // printf("0: %d\n1: %d\n2: %d\n3: %d\n4: %d\n5: %d\n",entidades->player->moved[0],entidades->player->moved[1],entidades->player->moved[2],entidades->player->moved[3],entidades->player->moved[4],entidades->player->moved[5]);
-         printf("player ta em %c\n",qBloco(*(base*)entidades->player,matrix));
+   //   printf("pos X: %.2f \n",entidades->player->pos[1]);
+   //   printf("pos Y: %.2f \n",entidades->player->pos[0]);
+   //   system("clear");
+   //    // printf("0: %d\n1: %d\n2: %d\n3: %d\n4: %d\n5: %d\n",entidades->player->moved[0],entidades->player->moved[1],entidades->player->moved[2],entidades->player->moved[3],entidades->player->moved[4],entidades->player->moved[5]);
+   //    printf("player ta em %c\n",qBloco(*(base*)entidades->player,matrix));
 
           // gravity for all
          for (int i=0;i<entidades->nFlames;i++)
@@ -234,7 +148,7 @@ int main() {
            gameMode = 3;
            ptrStatus->score  += 100;
            counTimer = 0;
-           printf("encostou no F\nfase atual: %d\n",faseAtual);
+         //  printf("encostou no F\nfase atual: %d\n",faseAtual);
          }
 
          
@@ -258,7 +172,7 @@ int main() {
             entidades = getEntities(matrix);
             gameMode = 1;
           }
-          printf("counter: %d\n",counTimer);
+      //    printf("counter: %d\n",counTimer);
           counTimer ++;
           BeginDrawing();
               ClearBackground(BLACK);
@@ -271,12 +185,17 @@ int main() {
             faseAtual++;
             matrix = carregaMapa(faseAtual);
             if (matrix == NULL) {
-                return 1;
+              faseAtual = 1;
+              matrix = carregaMapa(faseAtual);
+              if (matrix == NULL) {
+                printf("erro ao carregar mapa\n");
+                break;
+              }
             }
             entidades = getEntities(matrix);
             gameMode = 1;
           }
-          printf("counter: %d\n",counTimer);
+        //  printf("counter: %d\n",counTimer);
           counTimer ++;
           BeginDrawing();
               ClearBackground(BLACK);

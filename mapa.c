@@ -30,7 +30,7 @@ char* carregaMapa(int fase) {
     // Abre o arquivo de mapa para leitura
     FILE* maps = fopen(mapaNome, "r");
     if (maps == NULL) {
-        printf("Error: Could not open file.\n");
+        //printf("Error: Could not open file.\n");
         free(matrix); // Libera memória se o arquivo não puder ser aberto
         return NULL;
     }

@@ -100,6 +100,17 @@ cd InfDk
 #+end_src
 
 1. Para copilar e rodar:
+   mas requer que raylib esteja instalada
 #+begin_src bash
 make -k && ./jogo
 #+end_src
+
+*Obs:*
+- É importante que o terminal siga aberto para que o jogo funcione, fechar o terminal causará o fim do jogo.
+- Atualmente, ainda não foi implementada a visualização do placar dentro da GUI do jogo (na opção 'Ranking'), no entanto, ao encerrar uma jogada (quando acabam-se as vidas), o jogador deve informar seu nome no terminal e apertar enter (o nome deve ter até 20 caracteres), ficando salvo a posição do jogador no ranking;
+- A opção 'Ranking' printa os valores no terminal;
+
+** Jogabilidade:
+- Navega pelos menus com 'W' e 'D', selecionando a opção com Enter ou Espaço;
+- Em jogo: Anda para esquerda e direita com 'A'e 'D', pula com Espaço, sobe e desce escadas com 'W' e 'S'
+- Pausa o jogo com TAB ou 'P', despausa precionando novamente ou selecionando a opção no menu
