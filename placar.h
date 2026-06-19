@@ -1,7 +1,7 @@
 #ifndef PLACAR_H_
 #define PLACAR_H_
 
-#define maxScoreEntries 10
+#define maxScoreEntries 11
 #define placarArq "placar.bin"
 
 typedef struct {

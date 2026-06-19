@@ -40,6 +40,25 @@ void menuDraw(int page, menuOptions* menu, stats *status) {
       //void DrawRectangleLines(int posX, int posY, int width, int height, Color color);
         DrawRectangleLines(OPTEXTx-5, OPTEXTy+OPTEXTofset*(menu->selectedOption)-5,OPTEXTW+20,OPTEXTH-15, RED);
       break;
+    case 4:
+      tipo_placar* placar;
+      placar = readPlacar();
+      DrawText("Ranking:",250,50,20, BLUE);
+      DrawText("Pontuação:",340,110,20, YELLOW);
+      DrawText("Jogador",110,110,20, RED);
+      for (int i=0;i<maxScoreEntries;i++) {
+        if (placar[i].time > 0) {
+          DrawText(TextFormat("%s",placar[i].nome),110,150 + (30*i),20, RED);
+          DrawText(TextFormat("%d",placar[i].time),340,150 + (20*i),20, YELLOW);
+        }
+      }
+//    for (int i=0;i<NOPTIONS;i++)
+//      DrawText(menu->options[i],OPTEXTx,OPTEXTy+OPTEXTofset*i,20, BLUE);
+//      DrawRectangleLines(OPTEXTx-5, OPTEXTy+OPTEXTofset*(menu->selectedOption)-5,OPTEXTW+20,OPTEXTH-15, RED);
+      for (int i=0;i<NOPTIONS;i++)
+        DrawText(menu->options[i], OPTEXTx, GetScreenHeight() - (NOPTIONS * 15) - 20 + 15 * i, 10, BLUE);
+      DrawRectangleLines(OPTEXTx - 4, GetScreenHeight() - (NOPTIONS * 15) - 22 + 15 * (menu->selectedOption), OPTEXTW + 8, 14, RED);
+      break;
   }
 }
 
@@ -56,6 +75,7 @@ void selecionaOpcMenu(menuOptions* menu,int *gameMode, bool *exit, char** matriz
       break;
     case 1:
       printPlacar(readPlacar()); // testes ***
+      *gameMode = 6;
       break;
     case 2:
       *exit = true;

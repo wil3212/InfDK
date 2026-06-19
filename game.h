@@ -37,6 +37,7 @@ typedef struct player {
     bool alive;
     bool canJump;
     bool isClimbing;
+    int isRight; // 0 -> esquerda 1 -> direita
  // int score;
  // int lives;
 } mario;
@@ -68,6 +69,7 @@ typedef struct { //common to any kind of entity
   int jumpCount;
   bool alive;
   bool isClimbing;
+  int isRight; // 0 -> esquerda 1 -> direita
 } base;
 
 typedef struct entities {

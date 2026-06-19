@@ -13,13 +13,19 @@ void drawMatrix(char* matrix, entities* entidades) {
                     DrawRectangle(j * POS, i * POS, TAM, TAM, BLUE);
                     break;
                 case 'S': // Se o caractere for 'S', desenha um retângulo verde na posição correspondente, usando as constantes POS e TAM para determinar as coordenadas e o tamanho do retângulo
-                    DrawRectangle(j * POS, i * POS, TAM, TAM, GREEN);
+                    DrawRectangle(j * POS, i * POS, TAM/4, TAM, YELLOW);
+                    DrawRectangle((3*TAM/4) + j * POS, i * POS, TAM/4, TAM, YELLOW);
+                    DrawRectangle(j * POS, i * POS, TAM, TAM/4, YELLOW);
                     break;
                 case 'H': // Se o caractere for 'H', desenha um retângulo amarelo na posição correspondente, usando as constantes POS e TAM para determinar as coordenadas e o tamanho do retângulo
-                    DrawRectangle(j * POS, i * POS, TAM, TAM, YELLOW);
+                    DrawRectangle(j * POS, i * POS, TAM/4, TAM, YELLOW);
+                    DrawRectangle((3*TAM/4) + j * POS, i * POS, TAM/4, TAM, YELLOW);
+                    DrawRectangle(j * POS, i * POS, TAM, TAM/4, YELLOW);
                     break;
-                case 'D': // Se o caractere for 'D', desenha um retângulo laranja na posição correspondente, usando as constantes POS e TAM para determinar as coordenadas e o tamanho do retângulo
-                    DrawRectangle(j * POS, i * POS, TAM, TAM, ORANGE);
+                case 't': // Se o caractere for 'D', desenha um retângulo laranja na posição correspondente, usando as constantes POS e TAM para determinar as coordenadas e o tamanho do retângulo
+                    DrawRectangle(j * POS, i * POS, TAM/4, TAM, YELLOW);
+                    DrawRectangle((3*TAM/4) + j * POS, i * POS, TAM/4, TAM, YELLOW);
+                    DrawRectangle(j * POS, i * POS, TAM, TAM/4, YELLOW);
                     break;
                 default:
                     break;
@@ -28,13 +34,16 @@ void drawMatrix(char* matrix, entities* entidades) {
     }
 
     DrawRectangle(entidades->player->pos[1] * POS, entidades->player->pos[0] * POS, TAM, TAM, RED); // Desenha o jogador como um retângulo vermelho na posição correspondente, usando as coordenadas armazenadas em entidades->player->pos e as constantes POS e TAM para determinar as coordenadas e o tamanho do retângulo
-    DrawRectangle(entidades->player->pos[1] * POS, entidades->player->pos[0] * POS + TAM - 1, 4, 4, PINK); // Desenha um pequeno retângulo rosa na parte inferior do retângulo do jogador, usando as coordenadas armazenadas em entidades->player->pos e as constantes POS e TAM para determinar as coordenadas e o tamanho do retângulo, criando um efeito visual que destaca a base do jogador
 
     for (int i=0;i<entidades->nFlames;i++) {
       //DrawRectangle(entidades->flames[i]->pos[1] * POS, entidades->flames[i]->pos[0] * POS, TAM, TAM, BROWN);
-      Vector2 a = (Vector2){entidades->flames[i]->pos[1] * POS, entidades->flames[i]->pos[0] * POS};
-      Vector2 b = (Vector2){entidades->flames[i]->pos[1] * POS + TAM, entidades->flames[i]->pos[0] * POS + (TAM/2)};
-      Vector2 c = (Vector2){entidades->flames[i]->pos[1] * POS, entidades->flames[i]->pos[0] * POS + TAM};
-      DrawTriangleLines(b,c,a, BROWN);
+      //
+      Vector2 a;
+      Vector2 b;
+      Vector2 c;
+      a = (Vector2){entidades->flames[i]->pos[1] * POS, entidades->flames[i]->pos[0] * POS};
+      b = (Vector2){entidades->flames[i]->pos[1] * POS + TAM, entidades->flames[i]->pos[0] * POS + (TAM/2)};
+      c = (Vector2){entidades->flames[i]->pos[1] * POS, entidades->flames[i]->pos[0] * POS + TAM};
+      DrawTriangle(b,a,c, BROWN);
     }
 }

@@ -107,8 +107,9 @@ make -k && ./jogo
 
 *Obs:*
 - É importante que o terminal siga aberto para que o jogo funcione, fechar o terminal causará o fim do jogo.
-- Atualmente, ainda não foi implementada a visualização do placar dentro da GUI do jogo (na opção 'Ranking'), no entanto, ao encerrar uma jogada (quando acabam-se as vidas), o jogador deve informar seu nome no terminal e apertar enter (o nome deve ter até 20 caracteres), ficando salvo a posição do jogador no ranking;
-- A opção 'Ranking' printa os valores no terminal;
+- Atualmente, ainda não foi implementada atravez de GUI o recebimento do nome do jogador para guardar seu ranking;
+  O jogador deve informar seu nome no terminal e apertar enter (o nome deve ter até 20 caracteres), ficando salvo a posição do jogador no ranking;
+- A opção 'Ranking' mostra os top 10 scores com os respectivos nomes dos jogadores;
 
 ** Jogabilidade:
 - Navega pelos menus com 'W' e 'D', selecionando a opção com Enter ou Espaço;

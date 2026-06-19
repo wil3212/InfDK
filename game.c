@@ -88,10 +88,10 @@ void move(base *entity, char mode) {
             entity->grounded = 0;
             //printf("jumpppp");
         }
-        else if (entity->jumpCount == 1) {
-            entity->verticalV = D_JUMP_FORCE;
-            entity->jumpCount = 2;
-        }
+    //  else if (entity->jumpCount == 1) {
+    //      entity->verticalV = D_JUMP_FORCE;
+    //      entity->jumpCount = 2;
+    //  }
         entity->moved[0] = 1;
       }
       break;
@@ -128,9 +128,20 @@ void move(base *entity, char mode) {
   }
 }
 void colisionCheckMain(base *entity, char* matrix) {
-  for (int i=0;i<6;i++)
-    if (entity->moved[i])
-      colisionCheck(entity, i, matrix);
+//for (int i=0;i<6;i++)
+//  if (entity->moved[i])
+//    colisionCheck(entity, i, matrix);
+  // 1. Resolve colisões horizontais primeiro (Ejeta da parede)
+  if (entity->moved[1]) colisionCheck(entity, 1, matrix); // Esquerda (A)
+  if (entity->moved[3]) colisionCheck(entity, 3, matrix); // Direita (D)
+
+  // 2. Resolve colisões verticais depois (Teto e Chão)
+  if (entity->moved[0]) colisionCheck(entity, 0, matrix); // Teto
+  if (entity->moved[2]) colisionCheck(entity, 2, matrix); // Chão (Gravidade)
+
+  // 3. Resolve mecânicas de escada por último
+  if (entity->moved[4]) colisionCheck(entity, 4, matrix); // Subir
+  if (entity->moved[5]) colisionCheck(entity, 5, matrix); // Descer
 }
 void colisionCheck(base *entity, int direction, char* matrix) {
   switch (direction) {
@@ -165,11 +176,15 @@ void colisionCheck(base *entity, int direction, char* matrix) {
       int rowBottom = (int)(entity->pos[0] + 0.9f);
       if (entity->pos[1] < 0.0f) {
           entity->pos[1] = 0.0f;
+          entity->isRight = !entity->isRight;
+
       }
       if (isSolid(matrix[rowTop * NCOL + (int)(entity->pos[1])]) ||
           isSolid(matrix[rowBottom * NCOL + (int)(entity->pos[1])])) {
        //   entity->pos[1] -1.0 < -1.0) {
           entity->pos[1] = (float)((int)(entity->pos[1]) + 1.0f);
+          entity->isRight = !entity->isRight;
+
       }
       entity->moved[1] = 0;
       break;
@@ -205,19 +220,24 @@ void colisionCheck(base *entity, int direction, char* matrix) {
           isSolid(matrix[rowBottom * NCOL + (int)(entity->pos[1] + 1.0f)]) ||
           (int)(entity->pos[1] + 1.0f) > 29) {
             entity->pos[1] = (float)((int)(entity->pos[1] + 1.0f) - 1.0f);
+            entity->isRight = !entity->isRight;
+
       }
       entity->moved[3] = 0;
       break;
     case 4:
         calculaCantosInt2(entity);
         char chur = qBloco(*(base*)entity,matrix);
-        if (chur == 'S')
-          entity->isClimbing = 1;
+        if (!entity->isClimbing) {
+          if (chur == 'S')
+            entity->isClimbing = 1;
+        }
         else if (chur == 'D') {
           entity->isClimbing = 0;
           entity->verticalV = 0;
     //      entity->grounded = 1;
-          entity->pos[0] = (float)entity->intPos[0];
+          entity->pos[0] = (float)entity->intPos[0] + .15f;
+          if (rInt(0,1) == 1) entity->isRight = !entity->isRight;
         }
     //  else
     //    entity->isClimbing = 0;
@@ -227,13 +247,15 @@ void colisionCheck(base *entity, int direction, char* matrix) {
     case 5:
         calculaCantosInt2(entity);
         chur = qBloco(*(base*)entity,matrix);
-        if (chur == 'D')
-          entity->isClimbing = 1;
+        if (!entity->isClimbing) {
+          if (chur == 'D') entity->isClimbing = 1;
+        }
         else if (chur == 'S') {
           entity->isClimbing = 0;
           entity->verticalV = 0;
           entity->grounded = 1;
-          entity->pos[0] = (float)entity->intPos[0];
+          entity->pos[0] = (float)entity->intPos[0]+0.14f;
+          if (rInt(0,1) == 1) entity->isRight = !entity->isRight;
         }
     //  else
     //    entity->isClimbing = 0;
@@ -263,6 +285,7 @@ mario* initPlayer() {
     tmp->moved[i] = 0;
   tmp->grounded = 1;
   tmp->alive = 1;
+  tmp->isRight = 1;
 //tmp->score = 0;
 //tmp->lives = 3;
   return tmp;

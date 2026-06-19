@@ -21,6 +21,7 @@
 
 int main() {
 
+
     srand(time(NULL));
     // Inicializa a estrutura do jogador
     int faseAtual = 1;  // Indica qual a fase atual, 1, 2, 3...
@@ -87,20 +88,14 @@ int main() {
       //  }
           bichoIA(entidades,matrix);
 
+          //printf("random %d\n",rInt(0,1));
 
 
-          // === 1. MOVIMENTAÇÃO HORIZONTAL (Apenas altera o float, colisão vem depois)
           if (IsKeyDown(KEY_D)) move((base*)entidades->player,'D');
           if (IsKeyDown(KEY_A)) move((base*)entidades->player,'A');
-
-
-          if (IsKeyPressed(KEY_SPACE))
-            move((base*)entidades->player, 'W');
-
-          if (IsKeyDown(KEY_W))
-            move((base*)entidades->player, 'C');
-          if (IsKeyDown(KEY_S))
-            move((base*)entidades->player, 'c');
+          if (IsKeyPressed(KEY_SPACE)) move((base*)entidades->player, 'W');
+          if (IsKeyDown(KEY_W)) move((base*)entidades->player, 'C');
+          if (IsKeyDown(KEY_S)) move((base*)entidades->player, 'c');
 
           //printf("isCLimbing? %d\n",entidades->player->isClimbing);
           //printf("bloco %c \n",matrix[entidades->player->intPos[0] * NCOL + entidades->player->intPos[1]]);
@@ -160,10 +155,10 @@ int main() {
               ClearBackground(BLACK);
               // Desenha o mapa e o jogador
               drawMatrix(matrix, entidades);
-              DrawFPS(400,400);
+             // DrawFPS(400,400);
           EndDrawing();
           break;
-        case 2:
+        case 2: // Morreu
           if (counTimer > 150) {
             matrix = carregaMapa(faseAtual);
             if (matrix == NULL) {
@@ -214,7 +209,7 @@ int main() {
               menuDraw(0,menuPausa,ptrStatus);
           EndDrawing();
           break;
-          case 5:
+          case 5: // Game over
             if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER)) selecionaOpcMenu(menu,&gameMode,&exit,&matrix,entidades,&faseAtual,ptrStatus);
             if (menu->selectedOption < NOPTIONS-1)
               if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) menu->selectedOption++;
@@ -223,6 +218,17 @@ int main() {
             BeginDrawing();
                 ClearBackground(BLACK);
                 menuDraw(3,menu,ptrStatus);
+            EndDrawing();
+            break;
+          case 6: //Menu ranking
+            if (IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER)) selecionaOpcMenu(menu,&gameMode,&exit,&matrix,entidades,&faseAtual,ptrStatus);
+            if (menu->selectedOption < NOPTIONS-1)
+              if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) menu->selectedOption++;
+            if (menu->selectedOption > 0)
+              if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) menu->selectedOption--;
+            BeginDrawing();
+                ClearBackground(BLACK);
+                menuDraw(4,menu,ptrStatus);
             EndDrawing();
             break;
       }
