@@ -18,7 +18,9 @@
 
 #define maxFlames 50
 
-#define ladderOffSet 1.0
+#define ladderOffSet 0.2
+#define Doffset 1.0
+#define offc 0.9
 typedef struct {
   int score;
   int lives;

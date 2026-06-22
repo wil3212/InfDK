@@ -128,6 +128,8 @@ Seguira uma logica bem similar aquela do jogo original, onde se ganha pontos por
 - [ ] Implementar um "GameOver" screen
 - [ ] Utilizar a nova e melhorada função qBloco()
 
+* Importante!
+** Padronizar a compreensão das posições, isto é, o que é int e o que é float...
 * Tracking dos mallocs:
 1. array de placares
 2. entidades

@@ -24,3 +24,7 @@
 
         else if (matrix[(player1->intPos[2])*NCOL+player1->intPos[3]-1] == 'Z') player1->pos[1] = player1->intPos[3];
         else if (matrix[(player1->intPos[6])*NCOL+player1->intPos[7]-1] == 'Z') player1->pos[1] = player1->intPos[3];
+
+
+ if (!isSolid(matrix[(1 + entity->intPos[4]) * NCOL + entity->intPos[5]]) &&
+                !isSolid(matrix[(1 + entity->intPos[6]) * NCOL + entity->intPos[7]]))

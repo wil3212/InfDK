@@ -14,11 +14,20 @@
 #include <math.h>
 #include <time.h>
 #include "placar.h"
+void printa(base* entity) {
 
+  system("clear");
+  printf("Pos x: %.2f, Pos y: %.2f\n",entity->pos[1],entity->pos[0]);
+  printf("PosInt 4: %d, PosInt 5: %d\n",entity->intPos[4],entity->intPos[5]);
+  printf("PosInt 6: %d, PosInt 7: %d\n",entity->intPos[6],entity->intPos[7]);
+  printf("VerticalV V: %.2f\n",entity->verticalV);
 
+  printf("Is grounded: %d\n",entity->grounded);
+  printf("Is climbing: %d\n",entity->isClimbing);
 
+  system("clear");
 
-
+}
 int main() {
 
 
@@ -30,12 +39,10 @@ int main() {
     menuOptions* menu = initMenu(); //Inicializa o menu
     menuOptions* menuPausa = initMenuPausa(); //Inicializa o menu
 
-
     stats currentStatus = {0,3};
     stats *ptrStatus = &currentStatus;
 
     printPlacar(readPlacar()); // testes ***
-
 
 
     // Carrega o mapa do arquivo
@@ -49,12 +56,8 @@ int main() {
     // Imprime a matriz do mapa no console
     //printaMatriz(matrix);
 
-
-
     // Cria a janela do jogo com dimensões baseadas no mapa
     InitWindow((NLIN - 1) * TAM, (NCOL - 1) * TAM, "Donkey Kong INF");
-
-
 
     // Define o FPS alvo para 60
     SetTargetFPS(60);
@@ -80,12 +83,6 @@ int main() {
           if (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_TAB)) gameMode = 4;
 
           // mechhe os bixos!
-      //  for (int i=0;i<entidades->nFlames;i++) {
-      //    if (entidades->flames[i]->isRight)
-      //      move((base*)entidades->flames[i], 'D');
-      //    else
-      //      move((base*)entidades->flames[i], 'A');
-      //  }
           bichoIA(entidades,matrix);
 
           //printf("random %d\n",rInt(0,1));
@@ -96,15 +93,6 @@ int main() {
           if (IsKeyPressed(KEY_SPACE)) move((base*)entidades->player, 'W');
           if (IsKeyDown(KEY_W)) move((base*)entidades->player, 'C');
           if (IsKeyDown(KEY_S)) move((base*)entidades->player, 'c');
-
-          //printf("isCLimbing? %d\n",entidades->player->isClimbing);
-          //printf("bloco %c \n",matrix[entidades->player->intPos[0] * NCOL + entidades->player->intPos[1]]);
-          //printf("hor V: %.2f \n",entidades->player->horizontalV);
-   //   printf("pos X: %.2f \n",entidades->player->pos[1]);
-   //   printf("pos Y: %.2f \n",entidades->player->pos[0]);
-   //   system("clear");
-   //    // printf("0: %d\n1: %d\n2: %d\n3: %d\n4: %d\n5: %d\n",entidades->player->moved[0],entidades->player->moved[1],entidades->player->moved[2],entidades->player->moved[3],entidades->player->moved[4],entidades->player->moved[5]);
-   //    printf("player ta em %c\n",qBloco(*(base*)entidades->player,matrix));
 
           // gravity for all
          for (int i=0;i<entidades->nFlames;i++)
@@ -146,7 +134,8 @@ int main() {
          //  printf("encostou no F\nfase atual: %d\n",faseAtual);
          }
 
-         
+           printa((base*)entidades->player);
+
           // === RENDERIZAÇÃO ===
           // Inicia o frame de desenho
          //printf("antes de desenhar %d\n",faseAtual);
