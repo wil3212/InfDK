@@ -160,3 +160,23 @@ Y                   -/ +--------------------+\-
                             -----------
 #+end_example
 
+* Novo approach para o check de colisões: (23/06)
+** atualmente...
+Basicamente, atualmente, a logica se divide em primeiro movimentar as entidades (seja por inputs ou pela função de IA, ou gravidade) e depois checar se tal entidade colidiu com algo e responder apropriadamente  (se a entidade, depois dos movimentos, acabou dentro de algum tile, deve ser teleportada, velocidade resetada, etc...).
+
+Esse approach esta apresentando problemas complicados de resolver; Um desses é que em movimentos compostos, analisar uma direção antes de outra acarreta em efeitos indesejados, e invertendo a ordem acarretara efeitos indesejados em outras circunstâncias (e.g analisar colisões com o teto antes das laterais permite que a entidade conserve sua velocidade horizontal mesmo "batendo a cabeça", mas o preço é que paredes irão impedir pulos quando a entidade as encosta)
+
+Outra limitação são os "Movimentos imaginários"; Uma vez que uma série de eventos podem movimentar uma certa entidade em um certo frame, e que, dependendo das prioridades dadas nos checks, ocorre uma discrepância entre movimentos causados e o resultado desses após o check de colisões.
+
+Outra dificuldade é que não é possivel separar bem as funções de movimentação das de check de colisão; É preciso estabelecer uma série de checks nas funções de movimento tendo em vista estados das entidades (estados como "isClimbing", "grounded", "verticalV",...); Ou seja, dependendo do estado atual da entidade, move-la para baixo acarretará em comportamentos diferentes. Esses estados vão determinar o que a função de mover vai fazer, mas também como as colisões ocorrerão, e ambas as funções alteram tais estados em algumas circunstâncias.
+
+** Obs:
+No DK original, ao que parece, não há detecção lateral; Basicamente, não há paredes. Isso simplifica muito a colisão de superficies pois basicamente, nunca ocorreria o senário em que duas direções são detectadas simultâneamente...
+O problema atual se da justamente nesses senários.
+
+** Nova idia:
+- O sistema atual se baseia em checar a posição dos quatro cantos da entidade em questão; O problema, como já foi observado, ocorre quando mais de uma direção deve ser corrigida; Essencialmente, em movimentos diagonais. Nesses casos, até então, a solução de escolher arbirtrariamente uma das direções para checar primeiro causa os bugs observados.
+- Sendo assim, aumentando as subhitboxes poderia ajudar a distinguir qual direção deve ser corrigida primeiro;
+
+- Desenvolver um algoritmo que determina qual das colisões se deu primeiro
+  Basicamente, isso resolveria

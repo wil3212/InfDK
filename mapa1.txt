@@ -23,8 +23,8 @@ H  ZZZZ          Z
 H  Z             Z        D
 H  ZZZZZZ  ZZZZZZZZZZ  ZZZHZZZ
 H                         H   
-H       ZZZZZZZZZZZZZZZZZ H
-H                         H   
-H                         H   
-S                         S   
+H       ZZZZZ    ZZZZZZZZ H
+H         Z               H   
+H         Z               H   
+S         Z               S   
 ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ

@@ -16,16 +16,14 @@
 #include "placar.h"
 void printa(base* entity) {
 
-  system("clear");
+  //system("clear");
   printf("Pos x: %.2f, Pos y: %.2f\n",entity->pos[1],entity->pos[0]);
   printf("PosInt 4: %d, PosInt 5: %d\n",entity->intPos[4],entity->intPos[5]);
   printf("PosInt 6: %d, PosInt 7: %d\n",entity->intPos[6],entity->intPos[7]);
   printf("VerticalV V: %.2f\n",entity->verticalV);
-
   printf("Is grounded: %d\n",entity->grounded);
   printf("Is climbing: %d\n",entity->isClimbing);
-
-  system("clear");
+ // system("clear");
 
 }
 int main() {
@@ -134,7 +132,7 @@ int main() {
          //  printf("encostou no F\nfase atual: %d\n",faseAtual);
          }
 
-           printa((base*)entidades->player);
+         printa((base*)entidades->player);
 
           // === RENDERIZAÇÃO ===
           // Inicia o frame de desenho

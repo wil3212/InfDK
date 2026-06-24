@@ -88,7 +88,7 @@ void move(base *entity, char mode) {
       if (entity->isClimbing) {
         entity->pos[0] += CSPEED;
         entity->moved[2] = 1;
-        printf("climbedonw");
+//        printf("climbedonw");
       }
       entity->moved[5] = 1;
       break;
@@ -112,18 +112,13 @@ void move(base *entity, char mode) {
   }
 }
 void colisionCheckMain(base *entity, char* matrix) {
-//for (int i=0;i<6;i++)
-//  if (entity->moved[i])
-//    colisionCheck(entity, i, matrix);
-  // 1. Resolve colisões horizontais primeiro (Ejeta da parede)
+  if (entity->moved[0]) colisionCheck(entity, 0, matrix); // Teto
+
   if (entity->moved[1]) colisionCheck(entity, 1, matrix); // Esquerda (A)
   if (entity->moved[3]) colisionCheck(entity, 3, matrix); // Direita (D)
 
-  // 2. Resolve colisões verticais depois (Teto e Chão)
-  if (entity->moved[0]) colisionCheck(entity, 0, matrix); // Teto
   if (entity->moved[2]) colisionCheck(entity, 2, matrix); // Chão (Gravidade)
 
-  // 3. Resolve mecânicas de escada por último
   if (entity->moved[4]) colisionCheck(entity, 4, matrix); // Subir
   if (entity->moved[5]) colisionCheck(entity, 5, matrix); // Descer
 }
@@ -161,14 +156,13 @@ void colisionCheck(base *entity, int direction, char* matrix) {
       if (entity->pos[1] < 0.0f) {
           entity->pos[1] = 0.0f;
           entity->isRight = !entity->isRight;
-
       }
       if (isSolid(matrix[rowTop * NCOL + (int)(entity->pos[1])]) ||
           isSolid(matrix[rowBottom * NCOL + (int)(entity->pos[1])])) {
        //   entity->pos[1] -1.0 < -1.0) {
           entity->pos[1] = (float)((int)(entity->pos[1]) + 1.0f);
           entity->isRight = !entity->isRight;
-          entity->horizontalV = 0;
+          //entity->horizontalV = 0;
 
       }
       entity->moved[1] = 0;
@@ -184,9 +178,10 @@ void colisionCheck(base *entity, int direction, char* matrix) {
                   entity->grounded = 1;
                   entity->jumpCount = 0;
                   entity->horizontalV = 0;
-                    printf("grounddd\n");
+               //     printf("grounddd\n");
 
             }
+            else if (qBloco(*entity,matrix) == 'D') {}
             else if (entity->grounded && (isSolid(matrix[(1 + entity->intPos[4]) * NCOL + entity->intPos[5]]) ||
                 isSolid(matrix[(1 + entity->intPos[6]) * NCOL + entity->intPos[7]]))) {
               entity->grounded = 1;
@@ -195,9 +190,10 @@ void colisionCheck(base *entity, int direction, char* matrix) {
 
             else {
               entity->grounded = 0;
-              printf("ungrounded\n");
+             // printf("ungrounded\n");
             }
         }
+
         entity->moved[2] = 0;
       }
     else {
@@ -240,8 +236,8 @@ void colisionCheck(base *entity, int direction, char* matrix) {
           entity->isClimbing = 0;
           entity->verticalV = 0;
           entity->grounded = 1;
-          entity->pos[0] = (float)entity->intPos[0] + .15f;
-          entity->moved[2] = 0;
+          entity->pos[0] = (float)entity->intPos[0]-0.1;
+          entity->moved[2] = 1;
           if (rInt(0,1) == 1) entity->isRight = !entity->isRight;
         }
 
@@ -254,13 +250,14 @@ void colisionCheck(base *entity, int direction, char* matrix) {
           if (chur == 'D') {
             entity->isClimbing = 1;
             entity->grounded = 0;
+            entity->moved[2] = 0;
           }
         }
         else if (chur == 'S') {
           entity->isClimbing = 0;
           entity->verticalV = 0;
           entity->grounded = 1;
-          entity->pos[0] = (float)entity->intPos[0]+0.14f;
+          entity->pos[0] = (float)entity->intPos[0];
           if (rInt(0,1) == 1) entity->isRight = !entity->isRight;
         }
     //  else
